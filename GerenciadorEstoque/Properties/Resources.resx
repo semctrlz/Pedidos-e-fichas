@@ -118,8 +118,11 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="cameraSlr2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cameraSlr2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="x2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\x2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cameraslr4x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cameraslr4x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="DadoPequeno" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DadoPequeno.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -127,20 +130,11 @@
   <data name="plus2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\plus2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="trash2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\trash2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="clouddownload2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\clouddownload2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="arrowCircleBottom2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\arrowCircleBottom2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="x2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\x2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="fire2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\fire2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="cameraslr4x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cameraslr4x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="print4x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\print4x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="pencil2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pencil2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -148,19 +142,34 @@
   <data name="exportPdfx48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\exportPdfx48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="print4x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\print4x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="circleCheck2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\circleCheck2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="arrowCircleBottom2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrowCircleBottom2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="magnifyingGlass2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\magnifyingGlass2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="trash2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\trash2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="document" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\document.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="cloudupload2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\cloudupload2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="clouddownload2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\clouddownload2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="circleCheck2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\circleCheck2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DefaultImage" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\0.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cameraSlr2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cameraSlr2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="fire2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fire2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="default" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\default.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

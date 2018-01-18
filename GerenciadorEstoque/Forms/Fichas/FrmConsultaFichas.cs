@@ -17,8 +17,7 @@ namespace GerenciadorEstoque.Forms.Fichas
         public string codFicha = "";
         bool liberado = false;
         bool herdada = false;
-
-
+        
         public FrmConsultaFichas(DTOUsuarios u, bool h)
         {
             InitializeComponent();
@@ -56,14 +55,20 @@ namespace GerenciadorEstoque.Forms.Fichas
 
         private void CarregaDgv()
         {
+            string ativo = " ativo = 1 and ";
+
+            if (CbxInativo.Checked)
+            {
+                ativo = "";
+            }
+
             string busca = $"select p.cod_prato, p.nome_prato,  b.nome_buffet, c.nome_cat, s.nome_scat, " +
                             "p.peso_prato, p.rendimento_prato, Round((cp.valorTotal / nullif(p.rendimento_prato, 0)), 2) as custoPorcao, " +
-                            "Round((cp.valorTotal / nullif(p.peso_prato, 0)), 2) as custoKg, Round(cp.valorTotal, 2) as CustoTotal from prato p " +
-
+                            "Round((cp.valorTotal / nullif(p.peso_prato, 0)), 2) as custoKg, Round(cp.valorTotal, 2) as CustoTotal, ativo from prato p " +
                             $"left join custosPratos cp on cp.codigocigam = p.cod_prato and cp.id_unidade = {Convert.ToInt32(cbUnidade.SelectedValue)} " +
                             "left join buffet b on p.id_setor = b.id_buffet " +
                             "left join categoria c on p.cat = c.id_cat " +
-                            $"left join subcategoria s on p.subcat = s.id_scat where nome_prato like '%{txtNome.Text}%'";
+                            $"left join subcategoria s on p.subcat = s.id_scat where {ativo} nome_prato like '%{txtNome.Text}%'";
 
             if (cbSetor.Text != "")
             {
@@ -91,10 +96,11 @@ namespace GerenciadorEstoque.Forms.Fichas
 
             DataTable dados = new DataTable();
 
-            Image ver = Image.FromFile(caminho.Icones + "document.png");
-            Image edit = Image.FromFile(caminho.Icones + "pencil.png");
-            Image del = Image.FromFile(caminho.Icones + "trash.png");
+            Image ver = new Bitmap(Properties.Resources.document);
+            Image edit = new Bitmap(Properties.Resources.pencil2x);
+            Image del = new Bitmap(Properties.Resources.trash2x);
 
+           
             dados.Clear();
             dados.Columns.Add("CODIGO");
             dados.Columns.Add("NOME");
@@ -106,6 +112,7 @@ namespace GerenciadorEstoque.Forms.Fichas
             dados.Columns.Add("CUSTO/KG", typeof(double));
             dados.Columns.Add("CUSTO/PORCAO", typeof(double));
             dados.Columns.Add("TOTAL", typeof(double));
+            dados.Columns.Add("ATIVO");
             dados.Columns.Add("VER", typeof(System.Drawing.Bitmap));
             dados.Columns.Add("EDT", typeof(System.Drawing.Bitmap));
             dados.Columns.Add("DEL", typeof(System.Drawing.Bitmap));
@@ -124,6 +131,7 @@ namespace GerenciadorEstoque.Forms.Fichas
                 double custoPorcao = 0;
                 double custoKg = 0;
                 double custoTotal = 0;
+                string estaAtivo = "Ativo";
 
                 try
                 {
@@ -155,6 +163,12 @@ namespace GerenciadorEstoque.Forms.Fichas
                 }
                 catch { }
 
+                try
+                {
+                    estaAtivo = Convert.ToBoolean(tabela.Rows[i][10])?"Ativo":"Inativo";
+                }
+                catch { }
+
 
                 if (!(string.IsNullOrEmpty(tabela.Rows[i][3].ToString())))
                 {
@@ -166,7 +180,7 @@ namespace GerenciadorEstoque.Forms.Fichas
                     subcategoria = tabela.Rows[i][4].ToString();
                 }
 
-                dados.Rows.Add(new object[] { tabela.Rows[i][0].ToString(), tabela.Rows[i][1].ToString(), tabela.Rows[i][2].ToString(), categoria, subcategoria, peso, rendimento, custoKg, custoPorcao, custoTotal, ver, edit, del });
+                dados.Rows.Add(new object[] { tabela.Rows[i][0].ToString(), tabela.Rows[i][1].ToString(), tabela.Rows[i][2].ToString(), categoria, subcategoria, peso, rendimento, custoKg, custoPorcao, custoTotal, estaAtivo, ver, edit, del });
             }
 
             dgvFichas.DataSource = dados;
@@ -177,7 +191,8 @@ namespace GerenciadorEstoque.Forms.Fichas
 
         private void FormatarDGV()
         {
-            dgvFichas.AutoResizeColumns();
+            dgvFichas.AutoResizeColumns();          
+
         }
 
         public class Language
@@ -296,7 +311,7 @@ namespace GerenciadorEstoque.Forms.Fichas
             FichasTecnicas ft = new FichasTecnicas();
             BLLPermissoes bllperm = new BLLPermissoes();            
 
-            if (e.ColumnIndex == 12)
+            if (e.ColumnIndex == 13)
             {
                 if (e.RowIndex >= 0)
                 {
@@ -316,7 +331,7 @@ namespace GerenciadorEstoque.Forms.Fichas
                 }
             }
 
-            if (e.ColumnIndex == 11)
+            if (e.ColumnIndex == 12)
             {
                 if (e.RowIndex >= 0)
                 {
@@ -345,7 +360,7 @@ namespace GerenciadorEstoque.Forms.Fichas
                 }
             }
 
-            if (e.ColumnIndex == 10)
+            if (e.ColumnIndex == 11)
             {
                 if (e.RowIndex >= 0)
                 {
@@ -405,6 +420,32 @@ namespace GerenciadorEstoque.Forms.Fichas
 
             }
 
+
+        }
+
+        private void CbxInativo_CheckedChanged(object sender, EventArgs e)
+        {
+            if (liberado)
+            {
+                CarregaDgv();
+            }
+        }
+
+        private void DgvFichas_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+
+            if (e.RowIndex != -1)
+            {
+                if (dgvFichas.Rows[e.RowIndex].Cells[10].Value.ToString() == "Inativo" && e.ColumnIndex < 11)
+                {
+                    e.Paint(e.CellBounds, e.PaintParts);  // This will paint the cell for you
+                    e.Graphics.DrawLine(new Pen(Color.Black, 1), new Point(e.CellBounds.Left, e.CellBounds.Top), new Point(e.CellBounds.Right, e.CellBounds.Bottom));
+
+                    e.Graphics.DrawLine(new Pen(Color.Black, 1), new Point(e.CellBounds.Right, e.CellBounds.Top), new Point(e.CellBounds.Left, e.CellBounds.Bottom));
+
+                    e.Handled = true;
+                }
+            }
 
         }
     }

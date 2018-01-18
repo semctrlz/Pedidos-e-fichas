@@ -71,8 +71,17 @@ namespace GerenciadorEstoque.Code
                               "values (@codigo, @subgrupo, @nome, @um, @fc, @conversao); select @@IDENTITY;"
             };
 
+            string codigo;
+            if(modelo.CodigoCigam != "")
+            {
+                codigo = modelo.CodigoCigam;
+            }
+            else
+            {
+                codigo = CodigoItem(modelo);
+            }
 
-            cmd.Parameters.AddWithValue("@codigo", CodigoItem(modelo));
+            cmd.Parameters.AddWithValue("@codigo", codigo);
             cmd.Parameters.AddWithValue("@subgrupo", modelo.Subgrupo_id_subgrupo);
             cmd.Parameters.AddWithValue("@nome", modelo.Descricao);
             cmd.Parameters.AddWithValue("@um", modelo.Um);
@@ -109,6 +118,36 @@ namespace GerenciadorEstoque.Code
             }
 
             conexao.Desconectar();
+        }
+
+        internal DataTable Localizar(string valor, int idSubgrupo, bool somenteEstoque)
+        {
+            string somenteE = "";
+
+            if (somenteEstoque)
+            {
+                somenteE = "01.";
+            }
+
+            if (idSubgrupo > 0)
+            {
+
+                DataTable tabela = new DataTable();
+                SqlDataAdapter da = new SqlDataAdapter("select m.id_material, m.codigocigam, m.descricao, m.um, s.nome from materiais m " +
+                    "join subgrupo s on m.subgrupo_id_subgrupo = s.id_subgrupo " +
+                    $" where m.descricao like '%{valor}%' and m.subgrupo_id_subgrupo = {idSubgrupo} and codigoCigam like '{somenteE}%';", conexao.StringConexao);
+                da.Fill(tabela);
+                return tabela;
+            }
+            else
+            {
+                DataTable tabela = new DataTable();
+                SqlDataAdapter da = new SqlDataAdapter(@"select m.id_material, (m.codigocigam) as cod, m.descricao, m.um, s.nome from materiais m " +
+                   "join subgrupo s on m.subgrupo_id_subgrupo = s.id_subgrupo " +
+                   $" where m.descricao like '%{valor}%' and codigoCigam like '{somenteE}%';", conexao.StringConexao);
+                da.Fill(tabela);
+                return tabela;
+            }
         }
 
         public void Alterar(DTOMateriais modelo, string foto)
@@ -154,6 +193,36 @@ namespace GerenciadorEstoque.Code
 
                 catch { }
             }
+            conexao.Desconectar();
+        }
+
+        public void CriarValorExterno(string cod, double valor)
+        {
+            SqlCommand cmd = new SqlCommand()
+            {
+                Connection = conexao.ObjetoConexao,
+                CommandText = "update materiais set valorExterno = (@valor) WHERE codigocigam = (@codigo);"
+            };
+            cmd.Parameters.AddWithValue("@codigo", cod);
+            cmd.Parameters.AddWithValue("@valor", valor);            
+
+            conexao.Conectar();
+            cmd.ExecuteNonQuery();            
+            conexao.Desconectar();
+        }
+
+        public void DeletarValorExternoPorCod(string cod)
+        {
+            SqlCommand cmd = new SqlCommand()
+            {
+                Connection = conexao.ObjetoConexao,
+                CommandText = "update materiais set valorExterno = (@valor) WHERE codigocigam = (@codigo);"
+            };
+            cmd.Parameters.AddWithValue("@codigo", cod);
+            cmd.Parameters.AddWithValue("@valor", 0);
+
+            conexao.Conectar();
+            cmd.ExecuteNonQuery();
             conexao.Desconectar();
         }
 
@@ -228,7 +297,6 @@ namespace GerenciadorEstoque.Code
             return codigo;
         }
 
-
         public DataTable Localizar()
         {
             DataTable tabela = new DataTable();
@@ -248,6 +316,28 @@ namespace GerenciadorEstoque.Code
         }
 
         // Localiza por nome       
+
+        public double ValorExterno(String codigo)
+        {
+            DTOMateriais modelo = new DTOMateriais();
+            SqlCommand cmd = new SqlCommand()
+            {
+                Connection = conexao.ObjetoConexao,
+                CommandText = $"select valorExterno from materiais where codigocigam = '{codigo}';"
+            };
+            conexao.Conectar();
+            SqlDataReader registro = cmd.ExecuteReader();
+            double retorno = 0;
+
+            if (registro.HasRows)
+            {
+                registro.Read();
+                retorno = Convert.ToDouble(registro["valorExterno"]);
+            }
+            conexao.Desconectar();
+            return retorno;
+
+        }
 
         public DataTable Localizar(String valor, int idSubgrupo)
         {
@@ -282,6 +372,49 @@ $"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigo
             da.Fill(tabela);
             return tabela;
 
+        }
+
+        public string NomePeloCodigo(String codigo)
+        {
+            DTOMateriais modelo = new DTOMateriais();
+            SqlCommand cmd = new SqlCommand()
+            {
+                Connection = conexao.ObjetoConexao,
+                CommandText = $"select descricao from materiais where codigocigam = '{codigo}';"
+            };
+            conexao.Conectar();
+            SqlDataReader registro = cmd.ExecuteReader();
+            string retorno = "";
+
+            if (registro.HasRows)
+            {
+                registro.Read();
+                retorno = Convert.ToString(registro["descricao"]);
+            }
+            conexao.Desconectar();
+            return retorno;
+
+        }
+
+        public bool ExisteCodigo(string codigo)
+        {
+            DTOMateriais modelo = new DTOMateriais();
+            SqlCommand cmd = new SqlCommand()
+            {
+                Connection = conexao.ObjetoConexao,
+                CommandText = $"select id_material from materiais where codigocigam = '{codigo}';"
+            };
+            conexao.Conectar();
+            SqlDataReader registro = cmd.ExecuteReader();
+            bool retorno = false;
+
+            if (registro.HasRows)
+            {
+                retorno = true;
+            }
+            conexao.Desconectar();
+            return retorno;
+            
         }
 
         public DTOMateriais CarregaModeloMateriais(int codigo)
@@ -354,51 +487,44 @@ $"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigo
             SqlCommand cmd = new SqlCommand()
             {
                 Connection = conexao.ObjetoConexao,
-                CommandText = "insert into materiaisDerivados (id_material, descricao, um, fc, conversaoPeso) " +
-                              "values (@material, @nome, @um, @fc, @conversao); select @@IDENTITY;"
-            };
-            cmd.Parameters.AddWithValue("@material", modelo.Id_material);            
+                CommandText = "insert into materiaisDerivados (codMaterialBase, descricao, um) " +
+                              "values (@codigo, @nome, @um); select @@IDENTITY;"
+            };                      
+
+            cmd.Parameters.AddWithValue("@codigo", modelo.CodigoCigam);            
             cmd.Parameters.AddWithValue("@nome", modelo.Descricao);
-            cmd.Parameters.AddWithValue("@um", modelo.Um);
-            cmd.Parameters.AddWithValue("@fc", modelo.Fc);
-            cmd.Parameters.AddWithValue("@conversao", modelo.ConversaoPeso);
+            cmd.Parameters.AddWithValue("@um", modelo.Um);            
 
             conexao.Conectar();
-            modelo.Id_materialDerivado = Convert.ToInt32(cmd.ExecuteScalar());
-            conexao.Desconectar();
-
-
-        }
-
-        public void Alterar(DTOMateriaisDerivados modelo)
-        {
-            SqlCommand cmd = new SqlCommand()
-            {
-                Connection = conexao.ObjetoConexao,
-                CommandText = "update materiaisDerivados set id_material = (@material), descricao = (@nome), um = (@um), fc = (@fc), conversaoPeso = (@conversao) WHERE id_materialDerivado = (@id);"
-            };
-
-            cmd.Parameters.AddWithValue("@material", modelo.Id_material);
-            cmd.Parameters.AddWithValue("@nome", modelo.Descricao);
-            cmd.Parameters.AddWithValue("@um", modelo.Um);
-            cmd.Parameters.AddWithValue("@id", modelo.Id_material);
-            cmd.Parameters.AddWithValue("@fc", modelo.Fc);
-            cmd.Parameters.AddWithValue("@conversao", modelo.ConversaoPeso);
-
-            conexao.Conectar();
-            cmd.ExecuteNonQuery();
+            modelo.Id_material = Convert.ToInt32(cmd.ExecuteScalar());
             
             conexao.Desconectar();
         }
 
-        public void Excluir(int codigo)
+        public void Alterar(DTOMateriais modelo)
+        {
+            SqlCommand cmd = new SqlCommand()
+            {
+                Connection = conexao.ObjetoConexao,
+                CommandText = "update materiaisDerivados set codMaterialBase = (@codigo), descricao = (@nome), um = (@um) WHERE id_materialDerivado = (@id);"
+            };
+            cmd.Parameters.AddWithValue("@codigo", modelo.CodigoCigam);           
+            cmd.Parameters.AddWithValue("@nome", modelo.Descricao);            
+            cmd.Parameters.AddWithValue("@id", modelo.Id_material);            
+
+            conexao.Conectar();
+            cmd.ExecuteNonQuery();
+            conexao.Desconectar();
+        }
+
+        public void Excluir(int id)
         {
             SqlCommand cmd = new SqlCommand()
             {
                 Connection = conexao.ObjetoConexao,
                 CommandText = "delete from materiaisDerivados where id_materialDerivado = @id;"
             };
-            cmd.Parameters.AddWithValue("@id", codigo);
+            cmd.Parameters.AddWithValue("@id", id);
 
             conexao.Conectar();
             cmd.ExecuteNonQuery();
@@ -406,111 +532,56 @@ $"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigo
 
         }
 
-        public DataTable Localizar()
+        public void Excluir(string codigo)
         {
-            DataTable tabela = new DataTable();
-            SqlDataAdapter da = new SqlDataAdapter("select id_materialDerivado, id_material, descricao, um, fc, conversaoPeso from materiaisDerivados", conexao.StringConexao);
-            da.Fill(tabela);
-            return tabela;
-
-        }
-        
-        public DataTable Localizar(String valor, int idSubgrupo)
-        {
-            if (idSubgrupo > 0)
-            {
-
-                DataTable tabela = new DataTable();
-                SqlDataAdapter da = new SqlDataAdapter("select m.id_material, m.codigocigam, m.descricao, m.um, s.nome from materiais m " +
-                    "join subgrupo s on m.subgrupo_id_subgrupo = s.id_subgrupo " +
-                    $" where m.descricao like '%{valor}%' and m.subgrupo_id_subgrupo = {idSubgrupo};", conexao.StringConexao);
-                da.Fill(tabela);
-                return tabela;
-            }
-            else
-            {
-                DataTable tabela = new DataTable();
-                SqlDataAdapter da = new SqlDataAdapter(@"select m.id_material, FORMAT(m.codigocigam, '00\.00\.0000') as cod, m.descricao, m.um, s.nome from materiais m " +
-                   "join subgrupo s on m.subgrupo_id_subgrupo = s.id_subgrupo " +
-                   $" where m.descricao like '%{valor}%';", conexao.StringConexao);
-                da.Fill(tabela);
-                return tabela;
-            }
-
-        }
-
-        public DataTable ListarProdutos(String valor)
-        {
-            DataTable tabela = new DataTable();
-            SqlDataAdapter da = new SqlDataAdapter(@"select m.id_material, FORMAT(m.codigocigam, '00\.00\.0000') as cod, m.descricao, m.um, COUNT(a.id_marcas_aprovadas) as quant from materiais m  " +
-"left join marcasaprovadas a on a.materiais_id_material = m.id_material " +
-$"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigocigam, m.um;", conexao.StringConexao);
-            da.Fill(tabela);
-            return tabela;
-
-        }
-
-        public DataTable LocalizarMateriaisEDerivados(String valor, int subgrupo)
-        {
-            DataTable tabela = new DataTable();
-            SqlDataAdapter da = new SqlDataAdapter("declare @nome varchar(60); "+
-                    "declare @subgrupo int; "+
-                    $"set @nome = '%{valor}%'; "+
-                    $"set @subgrupo = {subgrupo}; "+
-
-                    "select 0 as id_materialDerivado, id_material, descricao, um, subgrupo_id_subgrupo from materiais where descricao like @nome and subgrupo_id_subgrupo = @subgrupo "+
-                    "union "+
-                    "select id_materialDerivado,0 as id_material, descricao, um, subgrupo_id_subgrupo from materiaisDerivados where descricao like @nome and subgrupo_id_subgrupo = @subgrupo;", conexao.StringConexao);
-            da.Fill(tabela);
-            return tabela;
-        }
-
-        public DataTable LocalizarMateriaisEDerivados(String valor)
-        {
-            DataTable tabela = new DataTable();
-            SqlDataAdapter da = new SqlDataAdapter("declare @nome varchar(60); "+
-            $" set @nome = '%{valor}%'; "+
-            " select 0 as id_materialDerivado, id_material, descricao, um, subgrupo_id_subgrupo from materiais where descricao like @nome "+
-            " union "+
-            " select id_materialDerivado,0 as id_material, descricao, um, subgrupo_id_subgrupo from materiaisDerivados where descricao like @nome", conexao.StringConexao);
-            da.Fill(tabela);
-            return tabela;
-        }
-
-        public DataTable ListarMateriaisEDerivados()
-        {
-            DataTable tabela = new DataTable();
-            SqlDataAdapter da = new SqlDataAdapter("select 0 as id_materialDerivado, id_material, descricao, um, subgrupo_id_subgrupo from materiais where descricao like @nome and subgrupo_id_subgrupo = @subgrupo; " +
-                    "union " +
-                    "select id_materialDerivado,0 as id_material, descricao, um, subgrupo_id_subgrupo from materiaisDerivados where descricao like @nome and subgrupo_id_subgrupo = @subgrupo;", conexao.StringConexao);
-            da.Fill(tabela);
-            return tabela;
-        }
-
-        public DTOMateriaisDerivados CarregaModeloMateriais(int codigo)
-        {
-            DTOMateriaisDerivados modelo = new DTOMateriaisDerivados();
             SqlCommand cmd = new SqlCommand()
             {
                 Connection = conexao.ObjetoConexao,
-                CommandText = "select id_material, id_materialDerivado, descricao, um from materiaisDerivados where id_materialDerivado =" + codigo.ToString()
+                CommandText = "delete from materiaisDerivados where codMaterialBase = @codigo;"
             };
+            cmd.Parameters.AddWithValue("@codigo", codigo);
+
             conexao.Conectar();
-            SqlDataReader registro = cmd.ExecuteReader();
-            if (registro.HasRows)
-            {
-                registro.Read();
-                modelo.Id_material = Convert.ToInt32(registro["id_material"]);
-                modelo.Id_materialDerivado= Convert.ToInt32(registro["id_materialDerivado"]);
-                modelo.Descricao = Convert.ToString(registro["descricao"]);
-                modelo.Um = Convert.ToString(registro["um"]);
-
-
-            }
+            cmd.ExecuteNonQuery();
             conexao.Desconectar();
-            return modelo;
 
         }
+
+        public DataTable Listar(string codigo)
+        {
+            DataTable tabela = new DataTable();
+            SqlDataAdapter da = new SqlDataAdapter($"select id_materialDerivado, codMaterialBase, descricao, um from materiaisDerivados where codMaterialBase = '{codigo}' order by descricao asc;", conexao.StringConexao);
+            da.Fill(tabela);
+            return tabela;
+
+        }
+
+        public bool ExisteNome(string nome)
+        {
+            SqlCommand cmd = new SqlCommand()
+            {
+                Connection = conexao.ObjetoConexao,
+                CommandText = $"select count(id_materialDerivado) as quant from materiaisDerivados where descricao = '{nome}';"
+            };
+
+            bool result = false;
+
+            conexao.Conectar();
+            SqlDataReader registro = cmd.ExecuteReader();
+
+            registro.Read();
+            if (Convert.ToInt32(registro["quant"]) > 0)
+            {
+                result = true;
+            }            
+
+            conexao.Desconectar();
+
+            return result;
+        }
+
+
+
     }
 
     public class DALPlanilhaPedidos
@@ -1824,6 +1895,32 @@ $"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigo
             return modelo;
 
         }
+
+        internal bool ExisteEmpresa(int id)
+        {
+            bool result = false;
+
+            DTOEmpresas modelo = new DTOEmpresas();
+
+            SqlCommand cmd = new SqlCommand()
+            {
+                Connection = conexao.ObjetoConexao,
+                CommandText = $"select id_empresa from empresa where id_empresa = {id};"
+            };
+
+            conexao.Conectar();
+
+            SqlDataReader registro = cmd.ExecuteReader();
+
+            if (registro.HasRows)
+            {
+                result = true;
+            }
+
+            conexao.Desconectar();
+
+            return result;
+        }
     }
 
     public class DALUnidades
@@ -1995,156 +2092,7 @@ $"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigo
 
     public class DALMarcasAprovadas
     {
-        //Instancia o objeto conexão
-        private DALConexao conexao;
-
-        //Conecta
-        public DALMarcasAprovadas(DALConexao cx)
-        {
-            this.conexao = cx;
-        }
-
-        public void Incluir(DTOMarcasAprovadas modelo)
-        {
-            SqlCommand cmd = new SqlCommand()
-            {
-                Connection = conexao.ObjetoConexao,
-                CommandText = "insert into marcasaprovadas " +
-
-                "(marcaitem, " +
-                "aprovadopor, " +
-                "dataaprovacao, " +
-                "exibirnoemail, " +
-                "obsaprovacao, " +
-                "materiais_id_material, " +
-                "usuarios_id_usuario) " +
-                "VALUES " +
-                "(@marcaitem, " +
-                "@aprovadopor, " +
-                "@dataaprovacao, " +
-                "@exibirnoemail, " +
-                "@obsaprovacao, " +
-                "@materiais_id_material, " +
-                "@usuarios_id_usuario); " +
-
-                "select @@IDENTITY;"
-            };
-
-            cmd.Parameters.AddWithValue("@marcaitem", modelo.Marca);
-            cmd.Parameters.AddWithValue("@aprovadopor", modelo.AprovadoPor);
-            cmd.Parameters.AddWithValue("@dataaprovacao", modelo.DataAprovacao);
-            cmd.Parameters.AddWithValue("@exibirnoemail", modelo.ExibirNoEmail);
-            cmd.Parameters.AddWithValue("@obsaprovacao", modelo.ObsAprovacao);
-            cmd.Parameters.AddWithValue("@materiais_id_material", modelo.Id_material);
-            cmd.Parameters.AddWithValue("@usuarios_id_usuario", modelo.Id_usuario);
-
-            conexao.Conectar();
-            modelo.Id_marcas_aprovadas = Convert.ToInt32(cmd.ExecuteScalar());
-
-            conexao.Desconectar();
-        }
-
-        public void Alterar(DTOMarcasAprovadas modelo)
-        {
-            SqlCommand cmd = new SqlCommand()
-            {
-                Connection = conexao.ObjetoConexao,
-                CommandText = "update marcasaprovadas set " +
-
-                "marcaitem = (@marcaitem), " +
-                "aprovadopor = (@aprovadopor), " +
-                "dataaprovacao = (@dataaprovacao), " +
-                "exibirnoemail = (@exibirnoemail), " +
-                "obsaprovacao = (@obsaprovacao), " +
-                "materiais_id_material = (@materiais_id_material), " +
-                "usuarios_id_usuario = (@usuarios_id_usuario) " +
-                "where id_marcas_aprovadas = (@id_marcas_aprovadas);"
-            };
-
-            cmd.Parameters.AddWithValue("@marcaitem", modelo.Marca);
-            cmd.Parameters.AddWithValue("@aprovadopor", modelo.AprovadoPor);
-            cmd.Parameters.AddWithValue("@dataaprovacao", modelo.DataAprovacao);
-            cmd.Parameters.AddWithValue("@exibirnoemail", modelo.ExibirNoEmail);
-            cmd.Parameters.AddWithValue("@obsaprovacao", modelo.ObsAprovacao);
-            cmd.Parameters.AddWithValue("@materiais_id_material", modelo.Id_material);
-            cmd.Parameters.AddWithValue("@usuarios_id_usuario", modelo.Id_usuario);
-            cmd.Parameters.AddWithValue("@id_marcas_aprovadas", modelo.Id_marcas_aprovadas);
-
-            conexao.Conectar();
-            cmd.ExecuteNonQuery();
-
-            conexao.Desconectar();
-        }
-
-        public void Excluir(int id)
-        {
-            SqlCommand cmd = new SqlCommand()
-            {
-                Connection = conexao.ObjetoConexao,
-                CommandText = $"delete from marcasaprovadas where id_marcas_aprovadas = {id};"
-            };
-
-            conexao.Conectar();
-            cmd.ExecuteNonQuery();
-            conexao.Desconectar();
-
-        }
-
-        // Localiza por nome
-        public DataTable Localizar(int id)
-        {
-            DataTable tabela = new DataTable();
-            SqlDataAdapter da = new SqlDataAdapter($"select id_marcas_aprovadas, marcaitem, aprovadopor, dataaprovacao from marcasaprovadas where materiais_id_material = {id};", conexao.StringConexao);
-            da.Fill(tabela);
-            return tabela;
-        }
-
-        public DataTable ListarNomes()
-        {
-            DataTable tabela = new DataTable();
-            SqlDataAdapter da = new SqlDataAdapter($"select DISTINCT aprovadopor from marcasaprovadas;", conexao.StringConexao);
-            da.Fill(tabela);
-            return tabela;
-
-        }
-
-        public DTOMarcasAprovadas CarregaModelo(int id)
-        {
-            DTOMarcasAprovadas modelo = new DTOMarcasAprovadas();
-            SqlCommand cmd = new SqlCommand()
-            {
-                Connection = conexao.ObjetoConexao,
-                CommandText = $"select id_marcas_aprovadas, marcaitem, aprovadopor, dataaprovacao, exibirnoemail, obsaprovacao, materiais_id_material, usuarios_id_usuario from marcasaprovadas where id_marcas_aprovadas = {id};"
-            };
-
-            conexao.Conectar();
-
-            SqlDataReader registro = cmd.ExecuteReader();
-            if (registro.HasRows)
-            {
-                registro.Read();
-                modelo.Id_marcas_aprovadas = Convert.ToInt32(registro["id_marcas_aprovadas"]);
-                modelo.Marca = Convert.ToString(registro["marcaitem"]);
-                modelo.AprovadoPor = Convert.ToString(registro["aprovadopor"]);
-                modelo.DataAprovacao = Convert.ToDateTime(registro["dataaprovacao"]);
-                modelo.ExibirNoEmail = Convert.ToBoolean(registro["exibirnoemail"]);
-                modelo.ObsAprovacao = Convert.ToString(registro["obsaprovacao"]);
-                modelo.Id_material = Convert.ToInt32(registro["materiais_id_material"]);
-                modelo.Id_usuario = Convert.ToInt32(registro["usuarios_id_usuario"]);
-            }
-
-            conexao.Desconectar();
-
-            return modelo;
-        }
-
-        public int ContarMarcas(int id)
-        {
-            DataTable tabela = new DataTable();
-            SqlDataAdapter da = new SqlDataAdapter($"select count(id_marcas_aprovadas) from marcasaprovadas where materiais_id_material = {id};", conexao.StringConexao);
-            da.Fill(tabela);
-            return Convert.ToInt32(tabela.Rows[0][0].ToString());
-        }
+        
 
     }
 
@@ -2284,14 +2232,14 @@ $"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigo
             this.conexao = cx;
         }
 
-        public void Incluir(DTOPratos modelo)
+        public void Incluir(DTOPratos modelo, string foto = "")
         {
             SqlCommand cmd = new SqlCommand()
             {
                 Connection = conexao.ObjetoConexao,
-                CommandText = "insert into prato(nome_prato, id_setor, cat, subcat, rendimento_prato, modo_preparo_prato, peso_prato, desc_prato, id_usuario, cod_prato, pessoasAtendidas) values " +
-                "(@nome, @setor, @cat, @subcat, @rendimento, @preparo, @peso, @desc, @usuario, @cod, @pax); select @@IDENTITY;"
+                CommandText = "EXECUTE CriaPrato @nome, @setor, @cat, @subcat, @rendimento, @preparo, @peso, @desc, @usuario, @cod, @pax;"
             };
+
             cmd.Parameters.AddWithValue("@nome", modelo.NomePrato);
             cmd.Parameters.AddWithValue("@setor", modelo.IdSetor);
             cmd.Parameters.AddWithValue("@cat", modelo.Cat);
@@ -2307,6 +2255,38 @@ $"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigo
             conexao.Conectar();
             modelo.IdPrato = Convert.ToInt32(cmd.ExecuteScalar());
             conexao.Desconectar();
+
+
+            DTOCaminhos dto = new DTOCaminhos();
+
+            string folder = dto.FT;
+
+            if (foto != "")
+            {
+                try
+                {
+                    var path = Path.Combine(folder, Path.GetFileName(foto));
+
+                    if (!Directory.Exists(folder))
+
+                    {
+                        Directory.CreateDirectory(folder);
+
+                        File.Copy(foto, folder + modelo.CodPrato.ToString() + Path.GetExtension(foto));
+                    }
+                    else
+                    {
+                        if (File.Exists(folder + modelo.CodPrato.ToString() + Path.GetExtension(foto)))
+                        {
+                            File.Delete(folder + modelo.CodPrato.ToString() + Path.GetExtension(foto));
+                        }
+
+                        File.Copy(foto, folder + modelo.CodPrato.ToString() + Path.GetExtension(foto));
+                    }
+                }
+                catch { }
+            }
+
         }
 
         public void AddModPreparo(DTOPratos modelo)
@@ -2331,9 +2311,7 @@ $"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigo
             SqlCommand cmd = new SqlCommand()
             {
                 Connection = conexao.ObjetoConexao,
-                CommandText = "update prato set nome_prato = (@nome), id_setor = (@setor)," +
-                "cat = (@cat), subcat = (@subcat), rendimento_prato =(@rendimento), modo_preparo_prato = (@preparo)," +
-                "peso_prato = (@peso), desc_prato = (@desc), id_usuario = (@usuario), pessoasAtendidas = (@pax) WHERE cod_prato = (@cod);"
+                CommandText = "EXECUTE AlterarPrato @nome, @setor, @cat, @subcat, @rendimento, @preparo, @peso, @desc, @usuario, @cod, @pax, @ativo;"
             };
             cmd.Parameters.AddWithValue("@nome", modelo.NomePrato);
             cmd.Parameters.AddWithValue("@setor", modelo.IdSetor);
@@ -2346,25 +2324,67 @@ $"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigo
             cmd.Parameters.AddWithValue("@usuario", modelo.IdUsuario);
             cmd.Parameters.AddWithValue("@cod", modelo.CodPrato);
             cmd.Parameters.AddWithValue("@pax", modelo.PessoasAtendidas);
+            cmd.Parameters.AddWithValue("@ativo", modelo.Ativo);
 
             conexao.Conectar();
             cmd.ExecuteNonQuery();
             conexao.Desconectar();
-
+            
         }
 
         public void Excluir(string codigo)
         {
+
+            if (quantIngredientes(codigo) > 0)
+            {
+                SqlCommand cmd = new SqlCommand()
+                {
+                    Connection = conexao.ObjetoConexao,
+                    CommandText = "EXECUTE InativaPrato @cod;"
+                };
+                cmd.Parameters.AddWithValue("@cod", codigo);
+                conexao.Conectar();
+                cmd.ExecuteNonQuery();
+                conexao.Desconectar();
+            }
+            else
+            {
+                SqlCommand cmd = new SqlCommand()
+                {
+                    Connection = conexao.ObjetoConexao,
+                    CommandText = "EXECUTE DeletaPrato @cod;"
+                };
+                cmd.Parameters.AddWithValue("@cod", codigo);
+                conexao.Conectar();
+                cmd.ExecuteNonQuery();
+                conexao.Desconectar();
+            }
+        }
+
+        int quantIngredientes(string cod)
+        {
+            int quant = 1;
+
+            conexao.Conectar();
+
             SqlCommand cmd = new SqlCommand()
             {
                 Connection = conexao.ObjetoConexao,
-                CommandText = "delete from prato where cod_prato = @cod;"
+                CommandText = $"select count(cod_item) as quantidade from ingredientes where cod_item = '{cod}';"
             };
-            cmd.Parameters.AddWithValue("@cod", codigo);
 
-            conexao.Conectar();
-            cmd.ExecuteNonQuery();
+
+            SqlDataReader registro = cmd.ExecuteReader();
+            if (registro.HasRows)
+            {
+                registro.Read();
+                quant = Convert.ToInt32(registro["quantidade"]);
+            }
+
             conexao.Desconectar();
+
+            return quant;
+
         }
 
         public DataTable LocalizarNome(String valor)
@@ -2386,7 +2406,7 @@ $"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigo
         public DataTable LocalizarPorCod(String cod)
         {
             DataTable tabela = new DataTable();
-            SqlDataAdapter da = new SqlDataAdapter($"select id_prato, nome_prato, id_setor, cat, subcat, rendimento_prato, modo_preparo_prato, peso_prato, desc_prato, id_usuario, pessoasAtendidas from prato where cod_prato = '{cod}';", conexao.StringConexao);
+            SqlDataAdapter da = new SqlDataAdapter($"select id_prato, nome_prato, id_setor, cat, subcat, rendimento_prato, modo_preparo_prato, peso_prato, desc_prato, id_usuario, pessoasAtendidas, ativo from prato where cod_prato = '{cod}';", conexao.StringConexao);
             da.Fill(tabela);
             return tabela;
         }
@@ -3060,21 +3080,30 @@ $"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigo
 
         public void Incluir(string codPrato, int idUnidade, double valor)
         {
-
-            SqlCommand cmd = new SqlCommand()
+            try
             {
-                Connection = conexao.ObjetoConexao,
-                CommandText = "insert into custosPratos (codigocigam, id_unidade, valorTotal, dataAtualizacao) " +
-                "values (@prato, @unidade, @valor, @data); select @@IDENTITY;"
-            };
-            cmd.Parameters.AddWithValue("@prato", codPrato);
-            cmd.Parameters.AddWithValue("@unidade", idUnidade);
-            cmd.Parameters.AddWithValue("@valor", valor);
-            cmd.Parameters.AddWithValue("@data", DateTime.Now);
+                SqlCommand cmd = new SqlCommand()
+                {
+                    Connection = conexao.ObjetoConexao,
+                    CommandText = "insert into custosPratos (codigocigam, id_unidade, valorTotal, dataAtualizacao) " +
+                    "values (@prato, @unidade, @valor, @data); select @@IDENTITY;"
+                };
+                cmd.Parameters.AddWithValue("@prato", codPrato);
+                cmd.Parameters.AddWithValue("@unidade", idUnidade);
+                cmd.Parameters.AddWithValue("@valor", valor);
+                cmd.Parameters.AddWithValue("@data", DateTime.Now);
 
-            conexao.Conectar();
-            cmd.ExecuteNonQuery();
+                conexao.Conectar();
+                cmd.ExecuteNonQuery();
+            }
+            catch
+            {
+
+            }
+            finally
+            {
             conexao.Desconectar();
+            }
 
         }
 
@@ -3114,21 +3143,30 @@ $"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigo
 
         public void Alterar(string codPrato, int idUnidade, double valor)
         {
-
-            SqlCommand cmd = new SqlCommand()
+            try
             {
-                Connection = conexao.ObjetoConexao,
-                CommandText = "update custosPratos set valorTotal = (@valor), dataAtualizacao = (@data) WHERE codigocigam = (@prato) and id_unidade = (@unidade);"
-            };
-            cmd.Parameters.AddWithValue("@prato", codPrato);
-            cmd.Parameters.AddWithValue("@unidade", idUnidade);
-            cmd.Parameters.AddWithValue("@valor", valor);
-            cmd.Parameters.AddWithValue("@data", DateTime.Now);
+                SqlCommand cmd = new SqlCommand()
+                {
+                    Connection = conexao.ObjetoConexao,
+                    CommandText = "update custosPratos set valorTotal = (@valor), dataAtualizacao = (@data) WHERE codigocigam = (@prato) and id_unidade = (@unidade);"
+                };
+                cmd.Parameters.AddWithValue("@prato", codPrato);
+                cmd.Parameters.AddWithValue("@unidade", idUnidade);
+                cmd.Parameters.AddWithValue("@valor", valor);
+                cmd.Parameters.AddWithValue("@data", DateTime.Now);
 
-            conexao.Conectar();
-            cmd.ExecuteNonQuery();
-            conexao.Desconectar();
-
+                conexao.Conectar();
+                cmd.ExecuteNonQuery();
+                
+            }
+            catch
+            {
+                
+            }
+            finally
+            {
+                conexao.Desconectar();
+            }
         }
 
         public double RetornarCustoPrato(string prato, int unidade)
@@ -3786,14 +3824,14 @@ $"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigo
             SqlCommand cmd = new SqlCommand()
             {
                 Connection = conexao.ObjetoConexao,
-                CommandText = "insert into cotacao (data, dataPedido, dataEntrega, idUsuario, idUnidade, idEmpresa) " +
-                              "values (@data, @dataPedido, @dataEntrega, @usuario, @unidade, @empresa); " +
+                CommandText = "insert into cotacao (data, dataInicioVigencia, dataFimVigencia, idUsuario, idUnidade, idEmpresa) " +
+                              "values (@data, @dataInicio, @dataFim, @usuario, @unidade, @empresa); " +
                               "select @@IDENTITY;"
             };
 
             cmd.Parameters.AddWithValue("@data", modelo.Data_criacao);
-            cmd.Parameters.AddWithValue("@dataPedido", modelo.Data_pedido);
-            cmd.Parameters.AddWithValue("@dataEntrega", modelo.Previsao_entrega);
+            cmd.Parameters.AddWithValue("@dataInicio", modelo.DataInicioVigencia);
+            cmd.Parameters.AddWithValue("@dataFim", modelo.DataFimVigencia);
             cmd.Parameters.AddWithValue("@usuario", modelo.Id_ususario);
             cmd.Parameters.AddWithValue("@unidade", modelo.Id_unidade);
             cmd.Parameters.AddWithValue("@empresa", modelo.IdEmpresa);
@@ -3809,12 +3847,12 @@ $"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigo
             SqlCommand cmd = new SqlCommand()
             {
                 Connection = conexao.ObjetoConexao,
-                CommandText = "update cotacao set data = (@data), dataPedido = (@dataPedido), dataEntrega = (@dataEntrega), idUsuario = (@usuario), idUnidade = (@unidade), idEmpresa = (@empresa)  WHERE id = (@id);"
+                CommandText = "update cotacao set data = (@data), dataPedido = (@dataInicio), dataEntrega = (@dataFim), idUsuario = (@usuario), idUnidade = (@unidade), idEmpresa = (@empresa)  WHERE id = (@id);"
             };
 
             cmd.Parameters.AddWithValue("@data", modelo.Data_criacao);
-            cmd.Parameters.AddWithValue("@dataPedido", modelo.Data_pedido);
-            cmd.Parameters.AddWithValue("@dataEntrega", modelo.Previsao_entrega);
+            cmd.Parameters.AddWithValue("@dataInicio", modelo.DataInicioVigencia);
+            cmd.Parameters.AddWithValue("@dataFim", modelo.DataFimVigencia);
             cmd.Parameters.AddWithValue("@usuario", modelo.Id_ususario);
             cmd.Parameters.AddWithValue("@unidade", modelo.Id_unidade);
             cmd.Parameters.AddWithValue("@empresa", modelo.IdEmpresa);
@@ -3883,6 +3921,68 @@ $"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigo
 
 
 
+    }
+
+    public class DALLevantamento
+    {
+        //Instancia o objeto conexão
+        private DALConexao conexao;
+
+        //Conecta
+        public DALLevantamento(DALConexao cx)
+        {
+            this.conexao = cx;
+        }
+
+        public void Incluir(DTOLevantamentos modelo)
+        {
+            SqlCommand cmd = new SqlCommand()
+            {
+                Connection = conexao.ObjetoConexao,
+                CommandText = "EXECUTE CriaLevantamento @usuario, @obs, @unidade;"
+            };
+
+            cmd.Parameters.AddWithValue("@usuario", modelo.IdUsuario);
+            cmd.Parameters.AddWithValue("@obs", modelo.Obs);
+            cmd.Parameters.AddWithValue("@unidade", modelo.Id_unidade);
+
+            conexao.Conectar();
+            modelo.Id = Convert.ToInt32(cmd.ExecuteScalar());
+            conexao.Desconectar();
+        }
+
+        public void Alterar(DTOLevantamentos modelo)
+        {
+            SqlCommand cmd = new SqlCommand()
+            {
+                Connection = conexao.ObjetoConexao,
+                CommandText = "EXECUTE AlteraLevantamento @usuario, @status, @obs, @unidade;"
+            };
+
+            cmd.Parameters.AddWithValue("@usuario", modelo.IdUsuario);
+            cmd.Parameters.AddWithValue("@status", modelo.Status);
+            cmd.Parameters.AddWithValue("@obs", modelo.Obs);
+            cmd.Parameters.AddWithValue("@unidade", modelo.Id_unidade);
+
+            conexao.Conectar();
+            modelo.Id = Convert.ToInt32(cmd.ExecuteScalar());
+            conexao.Desconectar();
+        }
+
+        public void Excluir(int id)
+        {
+            SqlCommand cmd = new SqlCommand()
+            {
+                Connection = conexao.ObjetoConexao,
+                CommandText = $"delete from levantamentos where id = {id};"
+            };
+
+            conexao.Conectar();
+            cmd.ExecuteNonQuery();
+            conexao.Desconectar();
+
+        }
+                
     }
 
 }

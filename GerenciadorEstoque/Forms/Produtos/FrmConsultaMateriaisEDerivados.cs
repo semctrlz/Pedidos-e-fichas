@@ -66,11 +66,11 @@ namespace GerenciadorEstoque.Forms.Empresas
 
             if (Convert.ToInt32(cbSubgrupo.SelectedValue) == 0)
             {
-                tabela = bll.LocalizarMateriaisEDerivados(txtProduto.Text.ToUpper().Trim());
+                //tabela = bll.LocalizarMateriaisEDerivados(txtProduto.Text.ToUpper().Trim());
             }
             else
             {
-                tabela = bll.LocalizarMateriaisEDerivados(txtProduto.Text.ToUpper().Trim(), Convert.ToInt32(cbSubgrupo.SelectedValue.ToString()));
+                //tabela = bll.LocalizarMateriaisEDerivados(txtProduto.Text.ToUpper().Trim(), Convert.ToInt32(cbSubgrupo.SelectedValue.ToString()));
             }
             DataTable dados = new DataTable();
 
@@ -87,11 +87,11 @@ namespace GerenciadorEstoque.Forms.Empresas
 
             if (Convert.ToInt32(cbSubgrupo.SelectedValue) == 0)
             {
-                tabela = bll.LocalizarMateriaisEDerivados(t.ToUpper().Trim());
+                //tabela = bll.LocalizarMateriaisEDerivados(t.ToUpper().Trim());
             }
             else
             {
-                tabela = bll.LocalizarMateriaisEDerivados(t.ToUpper().Trim(), Convert.ToInt32(cbSubgrupo.SelectedValue.ToString()));
+                //tabela = bll.LocalizarMateriaisEDerivados(t.ToUpper().Trim(), Convert.ToInt32(cbSubgrupo.SelectedValue.ToString()));
             }
             DataTable dados = new DataTable();
 

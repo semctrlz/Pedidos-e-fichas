@@ -94,6 +94,7 @@
             this.cbUnidade = new System.Windows.Forms.ComboBox();
             this.lbUnidade = new System.Windows.Forms.Label();
             this.txtId = new System.Windows.Forms.TextBox();
+            this.CbxAtivo = new System.Windows.Forms.CheckBox();
             this.gbFicha.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFicha)).BeginInit();
             this.gb1.SuspendLayout();
@@ -481,6 +482,7 @@
             // 
             // gb1
             // 
+            this.gb1.Controls.Add(this.CbxAtivo);
             this.gb1.Controls.Add(this.gbImagem);
             this.gb1.Controls.Add(this.gbIngredientes);
             this.gb1.Controls.Add(this.btNovo);
@@ -738,6 +740,7 @@
             // btSalvar
             // 
             this.btSalvar.Enabled = false;
+            this.btSalvar.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btSalvar.Image = global::GerenciadorEstoque.Properties.Resources.circleCheck2x;
             this.btSalvar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btSalvar.Location = new System.Drawing.Point(561, 49);
@@ -775,6 +778,18 @@
             this.txtId.TabStop = false;
             this.txtId.Visible = false;
             // 
+            // CbxAtivo
+            // 
+            this.CbxAtivo.AutoSize = true;
+            this.CbxAtivo.Checked = true;
+            this.CbxAtivo.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CbxAtivo.Location = new System.Drawing.Point(565, 109);
+            this.CbxAtivo.Name = "CbxAtivo";
+            this.CbxAtivo.Size = new System.Drawing.Size(50, 17);
+            this.CbxAtivo.TabIndex = 23;
+            this.CbxAtivo.Text = "Ativo";
+            this.CbxAtivo.UseVisualStyleBackColor = true;
+            // 
             // frmCadastroFichas
             // 
             this.AcceptButton = this.BtAddIngrediente;
@@ -797,6 +812,7 @@
             this.gbFicha.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFicha)).EndInit();
             this.gb1.ResumeLayout(false);
+            this.gb1.PerformLayout();
             this.gbImagem.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbFoto)).EndInit();
             this.gbIngredientes.ResumeLayout(false);
@@ -873,5 +889,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn custo_unit;
         private System.Windows.Forms.DataGridViewTextBoxColumn custo_total;
         private System.Windows.Forms.DataGridViewImageColumn del;
+        private System.Windows.Forms.CheckBox CbxAtivo;
     }
 }

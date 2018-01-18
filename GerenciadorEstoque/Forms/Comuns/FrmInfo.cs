@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.IO;
 using GerenciadorEstoque.Code;
+using System.Diagnostics;
 
 namespace GerenciadorEstoque.Forms.Comuns
 {
@@ -24,35 +25,19 @@ namespace GerenciadorEstoque.Forms.Comuns
 
         private void FrmInfo_Load(object sender, EventArgs e)
         {
-            DTOAssemblyInfo info = new DTOAssemblyInfo();
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            string version = fvi.FileVersion;
 
-            LbVersao.Text = info.Versao;
-            lbData.Text = info.DataVersao;
-            lbObs.Text = info.ObsVersao;
+            LbVersao.Text = version;
+
+            lbData.Text = File.GetCreationTime(Assembly.GetExecutingAssembly().Location).ToShortDateString();
+            lbObs.Text = fvi.FileDescription;
         }
 
         private void BtVerificarAtualizacao_Click(object sender, EventArgs e)
         {
-            Update update = new Update();
-
-            atualizar = false;
-
-            if (update.ChecarAtualizacao())
-            {
-                DialogResult dr = MessageBox.Show("Existe uma atualização disponível.\n\nAtualizar agora?", "Atenção", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-
-                if(dr == DialogResult.Yes)
-                {
-                    atualizar = true;
-                    this.Close();
-                }
-
-            }
-            else
-            {
-                MessageBox.Show("Seu sistema está com a última atualização disponível!!");
-            }
-
+            
         }
 
         private void LbZware_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

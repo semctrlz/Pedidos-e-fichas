@@ -317,9 +317,10 @@ namespace GerenciadorEstoque.Forms.Pedidos
             {
                 //Caso esteja uma mensagem é mostrada
                 MessageBox.Show("Para salvar insira itens na cotação!", "Aviso!");
-
-                //Caso o número da cotação não exista, cria uma nota cotação.
                 
+
+
+
 
 
 
@@ -328,6 +329,29 @@ namespace GerenciadorEstoque.Forms.Pedidos
             //Caso não esteja, continua com o salvamento
             else
             {
+                //Caso o número da cotação não exista, cria uma nota cotação.
+                if (TxtNumeroCotacao.Text.Length == 0)
+                {
+                    DTOCotacao dto = new DTOCotacao();
+                    dto.IdEmpresa = Convert.ToInt32(TxtCodFornecedor.Text);
+                    dto.DataInicioVigencia = DtpInicio.Value;
+                    dto.DataFimVigencia = DtpFim.Value;
+                    if (!CbxTodasUnidades.Checked)
+                    {
+                        dto.Id_unidade = Convert.ToInt32(CbUnidade.SelectedValue);
+                    }
+                    else
+                    {
+                        dto.Id_unidade = 0;
+                    }
+
+                    dto.Id_ususario = usuarioConectado.Id_usuario;
+
+                    BLLCotacao bll = new BLLCotacao();
+                    bll.Incluir(dto);
+                    TxtNumeroCotacao.Text = dto.Id.ToString("000000");
+                }
+
                 //excluir todos as cotações com o Id no TxtItensAExcluir
 
                 string[] IdsExclusao;

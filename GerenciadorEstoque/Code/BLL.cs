@@ -59,6 +59,23 @@ namespace GerenciadorEstoque.Code
             DALobj.ExcluirPorCodigo(codigo);
         }
 
+        public void CriarValorExterno(string cod, double valor)
+        {
+            if (cod.Substring(0, 2) != "01")
+            {
+                throw new Exception("Somente materiais base (Códigos iniciados em 01) podem ter o valor cadastrado.");
+            }
+
+            DALMateriais DALobj = new DALMateriais(conexao);
+            DALobj.CriarValorExterno(cod, valor);
+
+        }
+
+        public void DeletarValorExternoPorCod(string cod)
+        {
+            DALMateriais DALobj = new DALMateriais(conexao);
+            DALobj.DeletarValorExternoPorCod(cod);
+        }
 
         public void Alterar(DTOMateriais modelo, string foto)
         {
@@ -105,6 +122,12 @@ namespace GerenciadorEstoque.Code
             return DALobj.Localizar(valor, id);
         }
 
+        public DataTable Localizar(string valor, int id, bool somenteEstoque)
+        {
+            DALMateriais DALobj = new DALMateriais(conexao);
+            return DALobj.Localizar(valor, id, somenteEstoque);
+        }
+
         public DTOMateriais CarregaModeloMateriais(int codigo)
         {
             DALMateriais DALobj = new DALMateriais(conexao);
@@ -122,6 +145,27 @@ namespace GerenciadorEstoque.Code
             DALMateriais DALobj = new DALMateriais(conexao);
             return DALobj.LocalizarPorCod(cod);
         }
+
+        public double ValorExterno(String codigo)
+        {
+            DALMateriais DALobj = new DALMateriais(conexao);
+            return DALobj.ValorExterno(codigo);
+        }
+
+        public string NomePeloCodigo(String codigo)
+        {
+            DALMateriais DALobj = new DALMateriais(conexao);
+            return DALobj.NomePeloCodigo(codigo);
+
+        }
+
+        public bool ExisteCodigo(string codigo)
+        {
+            DALMateriais DALobj = new DALMateriais(conexao);
+            return DALobj.ExisteCodigo(codigo);
+
+        }
+
     }
 
     public class BLLMateriaisDerivados
@@ -135,97 +179,61 @@ namespace GerenciadorEstoque.Code
             this.conexao = cx;
         }
 
-        public void Incluir(DTOMateriaisDerivados modelo, string foto)
+        public void Incluir(DTOMateriaisDerivados modelo)
         {
             if (modelo.Descricao.Trim().Length == 0)
             {
-                throw new Exception("O nome do material é obrigatório.");
+                throw new Exception("O nome do item é obrigatório.");
             }
 
-            if (modelo.Um.Trim().Length == 0)
+            modelo.Descricao = modelo.Descricao.Trim().ToUpper();
+
+            if (ExisteNome(modelo.Descricao))
             {
-                throw new Exception("A unidade de medida do material é obrigatória.");
-            }            
-
-            //Tratamento das informações
-
-            modelo.Descricao = modelo.Descricao.ToUpper().Trim();
-            modelo.Um = modelo.Um.ToUpper().Trim();
+                throw new Exception("Este nome já existe para outro material derivado. Por favor, escolha um nome diferente.");
+            }
 
             DALMateriaisDerivados DALobj = new DALMateriaisDerivados(conexao);
             DALobj.Incluir(modelo);
         }
 
-        public void Excluir(int codigo)
+        public void Alterar(DTOMateriais modelo)
         {
-            DALMateriaisDerivados DALobj = new DALMateriaisDerivados(conexao);
-            DALobj.Excluir(codigo);
-        }
-        
-        public void Alterar(DTOMateriaisDerivados modelo)
-        {
-            if (modelo.Descricao.Trim().Length == 0)
-            {
-                throw new Exception("O nome do material é obrigatório.");
-            }
-
-            if (modelo.Um.Trim().Length == 0)
-            {
-                throw new Exception("A unidade de medida do material é obrigatória.");
-            }
-                        
-            //Tratamento das informações
-
-            modelo.Descricao = modelo.Descricao.ToUpper().Trim();
-            modelo.Um = modelo.Um.ToUpper().Trim();
-
-
             DALMateriaisDerivados DALobj = new DALMateriaisDerivados(conexao);
             DALobj.Alterar(modelo);
         }
 
-        public DataTable Localizar()
+        public void Excluir(int id)
         {
             DALMateriaisDerivados DALobj = new DALMateriaisDerivados(conexao);
-            return DALobj.Localizar();
+            DALobj.Excluir(id);
+
         }
 
-        public DataTable ListarProdutos(string valor)
+        public void Excluir(string codigo)
         {
             DALMateriaisDerivados DALobj = new DALMateriaisDerivados(conexao);
-            return DALobj.ListarProdutos(valor);
+            DALobj.Excluir(codigo);
+
         }
 
-        public DataTable Localizar(string valor, int id)
+        public DataTable Listar(string codigo)
         {
             DALMateriaisDerivados DALobj = new DALMateriaisDerivados(conexao);
-            return DALobj.Localizar(valor, id);
+            return DALobj.Listar(codigo);
+
         }
 
-        public DataTable LocalizarMateriaisEDerivados(string valor)
+        internal DataTable ListarMateriaisEDerivados(object text)
         {
-            DALMateriaisDerivados DALobj = new DALMateriaisDerivados(conexao);
-            return DALobj.LocalizarMateriaisEDerivados(valor);
+            throw new NotImplementedException();
         }
 
-        public DataTable LocalizarMateriaisEDerivados(string valor, int subgrupo)
+        public bool ExisteNome(string nome)
         {
             DALMateriaisDerivados DALobj = new DALMateriaisDerivados(conexao);
-            return DALobj.LocalizarMateriaisEDerivados(valor, subgrupo);
+            return DALobj.ExisteNome(nome);
         }
-
-        public DataTable ListarMateriaisEDerivados()
-        {
-            DALMateriaisDerivados DALobj = new DALMateriaisDerivados(conexao);
-            return DALobj.ListarMateriaisEDerivados();
-        }
-
-        public DTOMateriaisDerivados CarregaModeloMateriais(int codigo)
-        {
-            DALMateriaisDerivados DALobj = new DALMateriaisDerivados(conexao);
-            return DALobj.CarregaModeloMateriais(codigo);
-        }
-                        
     }
 
     public class BLLUSuarios
@@ -651,6 +659,13 @@ namespace GerenciadorEstoque.Code
             return DALobj.CarregaModelo(id);
         }
 
+        public bool ExisteEmpresa(int id)
+        {
+            DALEmpresas DALobj = new DALEmpresas(conexao);
+            return DALobj.ExisteEmpresa(id);
+        }
+
+
         public DTOUnidade CarregaModelo()
         {
             DALUnidades DALobj = new DALUnidades(conexao);
@@ -661,87 +676,7 @@ namespace GerenciadorEstoque.Code
 
     public class BLLMarcasAprovadas
     {
-        private DALConexao conexao;
-
-        public BLLMarcasAprovadas()
-        {
-            DALConexao cx = new DALConexao(DALDadosConexao.StringDaConexao);
-
-            this.conexao = cx;
-        }
-
-        public void Incluir(DTOMarcasAprovadas modelo)
-        {
-            if (modelo.Marca.Trim().Length == 0)
-            {
-                throw new Exception("O Nome da marca é obrigatório.");
-            }
-
-            if (modelo.AprovadoPor.Trim().Length == 0)
-            {
-                throw new Exception("O nome de quem autorizou a marca é obrigatório.");
-            }
-
-            //Tratamento das informações
-
-            modelo.Marca = modelo.Marca.ToUpper().Trim();
-            modelo.AprovadoPor = modelo.AprovadoPor.ToUpper().Trim();
-
-            DALMarcasAprovadas DALobj = new DALMarcasAprovadas(conexao);
-            DALobj.Incluir(modelo);
-        }
-
-        public void Excluir(int codigo)
-        {
-            DALMarcasAprovadas DALobj = new DALMarcasAprovadas(conexao);
-            DALobj.Excluir(codigo);
-        }
-
-        public void Alterar(DTOMarcasAprovadas modelo)
-        {
-            if (modelo.Marca.Trim().ToUpper().Length == 0)
-            {
-                throw new Exception("O nome da marca é obrigatório.");
-            }
-
-            if (modelo.AprovadoPor.Trim().Length == 0)
-            {
-                throw new Exception("O nome de quem liberou a marca é obrigatório.");
-            }
-
-            //Tratamento das informações
-
-            modelo.Marca = modelo.Marca.ToUpper().Trim();
-            modelo.AprovadoPor = modelo.AprovadoPor.ToUpper().Trim();
-
-
-            DALMarcasAprovadas DALobj = new DALMarcasAprovadas(conexao);
-            DALobj.Alterar(modelo);
-        }
-
-        public DataTable Localizar(Int32 valor)
-        {
-            DALMarcasAprovadas DALobj = new DALMarcasAprovadas(conexao);
-            return DALobj.Localizar(valor);
-        }
-
-        public int ContarMarcas(Int32 valor)
-        {
-            DALMarcasAprovadas DALobj = new DALMarcasAprovadas(conexao);
-            return DALobj.ContarMarcas(valor);
-        }
-
-        public DataTable ListarNomes()
-        {
-            DALMarcasAprovadas DALobj = new DALMarcasAprovadas(conexao);
-            return DALobj.ListarNomes();
-        }
-
-        public DTOMarcasAprovadas CarregaMarca(int id)
-        {
-            DALMarcasAprovadas DALobj = new DALMarcasAprovadas(conexao);
-            return DALobj.CarregaModelo(id);
-        }
+       
 
     }
 
@@ -1701,6 +1636,133 @@ namespace GerenciadorEstoque.Code
             DALItensPedido DALobj = new DALItensPedido(conexao);
             return DALobj.Carregar(id);
         }
+    }
+
+    public class BLLCotacao
+    {
+        private DALConexao conexao;
+
+        public BLLCotacao()
+        {
+            DALConexao cx = new DALConexao(DALDadosConexao.StringDaConexao);
+
+            this.conexao = cx;
+        }
+
+        public void Incluir(DTOCotacao modelo)
+        {
+            modelo.Data_criacao = DateTime.Today;
+
+            //verifica o preenchimento do nome do setor
+            if (modelo.DataInicioVigencia > modelo.DataFimVigencia)
+            {
+                throw new Exception("A data de início de vigência deve ser posterior ao início!");
+            }
+
+            BLLEmpresa bllemp = new BLLEmpresa();
+
+            if (!bllemp.ExisteEmpresa(modelo.IdEmpresa))
+            {
+                throw new Exception("Empresa inválida.");
+            }
+
+            DALCotacao DALobj = new DALCotacao(conexao);
+            DALobj.Incluir(modelo);
+        }
+
+        public void Alterar(DTOCotacao modelo)
+        {
+            //verifica o preenchimento do nome do setor
+            if (modelo.DataInicioVigencia > modelo.DataFimVigencia)
+            {
+                throw new Exception("A data de início de vigência deve ser posterior ao início!");
+            }
+
+            BLLEmpresa bllemp = new BLLEmpresa();
+
+            if (!bllemp.ExisteEmpresa(modelo.IdEmpresa))
+            {
+                throw new Exception("Empresa inválida.");
+            }
+
+            DALCotacao DALobj = new DALCotacao(conexao);
+            DALobj.Alterar(modelo);
+        }
+
+        public void Excluir(int codigo)
+        {
+            DALPedidos DALobj = new DALPedidos(conexao);
+            DALobj.Excluir(codigo);
+        }
+
+        public DataTable Listar()
+        {
+            DALPedidos DALobj = new DALPedidos(conexao);
+            return DALobj.Listar();
+        }
+
+        public DataTable Listar(bool a, bool s, bool c)
+        {
+            string aberto, solicitado, cancelado;
+            aberto = " ";
+            solicitado = " ";
+            cancelado = " ";
+
+            if (a) { aberto = "Aberto"; }
+            if (s) { solicitado = "Solicitado"; }
+            if (c) { cancelado = "Cancelado"; }
+
+            DALPedidos DALobj = new DALPedidos(conexao);
+            return DALobj.Listar(aberto, solicitado, cancelado);
+        }
+
+        public DataTable Listar(int id)
+        {
+            DALPedidos DALobj = new DALPedidos(conexao);
+            return DALobj.Listar(id);
+        }
+
+        public DTOPedidos Carregar(int id)
+        {
+            DALPedidos DALobj = new DALPedidos(conexao);
+            return DALobj.Carregar(id);
+        }
+
+
+    }
+
+    public class BLLLevantamentos
+    {
+        private DALConexao conexao;
+
+        public BLLLevantamentos()
+        {
+            DALConexao cx = new DALConexao(DALDadosConexao.StringDaConexao);
+
+            this.conexao = cx;
+        }
+
+        public void Incluir(DTOLevantamentos modelo)
+        {
+            modelo.Obs = modelo.Obs.Trim().ToUpper();
+
+            DALLevantamento DALobj = new DALLevantamento(conexao);
+            DALobj.Incluir(modelo);
+        }
+
+        public void Alterar(DTOLevantamentos modelo)
+        {
+            DALLevantamento DALobj = new DALLevantamento(conexao);
+            DALobj.Alterar(modelo);
+        }
+
+        public void Excluir(int id)
+        {
+            DALLevantamento DALobj = new DALLevantamento(conexao);
+            DALobj.Excluir(id);
+
+        }
+
     }
 
     #endregion

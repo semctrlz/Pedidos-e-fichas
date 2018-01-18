@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,27 +58,27 @@ namespace GerenciadorEstoque.Forms.Fichas
 
         private void DefaultValues()
         {
-            BLLUnidade bllun = new BLLUnidade();
+                BLLUnidade bllun = new BLLUnidade();
 
-            cbUnidade.DataSource = bllun.Localizar();
-            cbUnidade.DisplayMember = "nomeReduzido";
-            cbUnidade.ValueMember = "id_unidade";
-            cbUnidade.Text = "nomeReduzido";
+                cbUnidade.DataSource = bllun.Localizar();
+                cbUnidade.DisplayMember = "nomeReduzido";
+                cbUnidade.ValueMember = "id_unidade";
+                cbUnidade.Text = "nomeReduzido";
             
 
-            BLLPermissoes bllperm = new BLLPermissoes();
+                BLLPermissoes bllperm = new BLLPermissoes();
 
-            if (bllperm.PermissaoPorLocal(Diversos.LocaisPermissoes.Usarios, usuarioConectado) >= 4)
-            {
-                cbUnidade.Enabled = true;
-            }
+                if (bllperm.PermissaoPorLocal(Diversos.LocaisPermissoes.Usarios, usuarioConectado) >= 4)
+                {
+                    cbUnidade.Enabled = true;
+                }
 
-            else
-            {
-                cbUnidade.Enabled = false;
-            }
+                else
+                {
+                    cbUnidade.Enabled = false;
+                }
 
-            unidade = Convert.ToInt32(cbUnidade.SelectedValue);
+                unidade = Convert.ToInt32(cbUnidade.SelectedValue);
             CarregaCat();
             LimpaCampos();
             AlteraBotoes();
@@ -107,6 +108,7 @@ namespace GerenciadorEstoque.Forms.Fichas
             btEditar.Enabled = false;
             btSalvar.Enabled = false;
             BtLocalizar.Enabled = false;
+            CbxAtivo.Enabled = false;
 
             if (txtCodigoPrato.Text.Replace(".", "").Trim().Length > 0)
             {
@@ -169,7 +171,7 @@ namespace GerenciadorEstoque.Forms.Fichas
                 txtDescricao.Enabled = true;
                 gbImagem.Enabled = true;
                 TxtAtendePax.Enabled = true;
-
+                CbxAtivo.Enabled = true;
 
 
             }
@@ -269,7 +271,8 @@ namespace GerenciadorEstoque.Forms.Fichas
             DTOCaminhos dto = new DTOCaminhos();
 
             liberado = false;
-            pbFoto.Load(dto.Produtos + "0.jpg");
+            Image defaultFoto = new Bitmap(Properties.Resources.DefaultImage);
+            pbFoto.Image = defaultFoto;
             txtCodItem.Clear();
             txtNomeItem.Clear();
             txtQuant.Clear();
@@ -324,6 +327,8 @@ namespace GerenciadorEstoque.Forms.Fichas
             double rendimento, peso;
             int setor, cat, subcat, quantPax;
 
+            int ativo = 1;
+
             if (tabela.Rows.Count == 0)
             {
                 MessageBox.Show("Não foi possível Localizar a ficha técnica selecionada.");
@@ -341,6 +346,7 @@ namespace GerenciadorEstoque.Forms.Fichas
                 cat = Convert.ToInt32(tabela.Rows[0][3]);
                 subcat = Convert.ToInt32(tabela.Rows[0][4]);
                 quantPax = Convert.ToInt32(tabela.Rows[0][10]);
+                ativo = Convert.ToInt32(tabela.Rows[0][11]);
 
                 txtCodigoPrato.Text = cod;
                 txtNome.Text = nomePrato;
@@ -374,6 +380,15 @@ namespace GerenciadorEstoque.Forms.Fichas
                     txtPeso.Text = peso.ToString("#,0.0000");
                 }
 
+                if (ativo == 1)
+                {
+                    CbxAtivo.Checked = true;
+                }
+                else
+                {
+                    CbxAtivo.Checked = false;
+                }
+
                 txtRendimento.Text = rendimento.ToString("#,0.00");
 
 
@@ -400,22 +415,22 @@ namespace GerenciadorEstoque.Forms.Fichas
                     cbSubCategoria.Text = tabelascat.Rows[0][0].ToString();
                 }
 
-                CarregarIngredientesPorCodigo(cod);
-
                 DTOCaminhos dtocaminhos = new DTOCaminhos();
 
-                try
+                if (File.Exists(dtocaminhos.FT + cod + ".jpg"))
                 {
                     pbFoto.Load(dtocaminhos.FT + cod + ".jpg");
                     BtDeletaFoto.Enabled = true;
                 }
-                catch
+                else
                 {
-                    pbFoto.Load(dtocaminhos.Produtos + "0.jpg");
+                    Image defaultImage = new Bitmap(Properties.Resources.DefaultImage);
+
+                    pbFoto.Image = defaultImage;
                     BtDeletaFoto.Enabled = false;
                 }
 
-
+                CarregarIngredientesPorCodigo(cod);
             }
         }
 
@@ -542,6 +557,7 @@ namespace GerenciadorEstoque.Forms.Fichas
             dto.PesoPrato = Convert.ToDouble(txtPeso.Text);
             dto.IdUsuario = usuarioConectado.Id_usuario;
             dto.DescPrato = txtDescricao.Text.Trim().ToUpper();
+            dto.Ativo = CbxAtivo.Checked ? 1 : 0;
 
             try
             {
@@ -554,8 +570,7 @@ namespace GerenciadorEstoque.Forms.Fichas
 
             //Dados de AEB
 
-            DTOMateriais dtoaeb = new DTOMateriais();
-            BLLMateriais bllaeb = new BLLMateriais();
+            DTOMateriais dtoaeb = new DTOMateriais();           
             
             dtoaeb.CodigoCigam = Convert.ToString(dto.CodPrato);
             dtoaeb.Descricao = dto.NomePrato;
@@ -568,8 +583,7 @@ namespace GerenciadorEstoque.Forms.Fichas
                 try
                 {
                     bll.Incluir(dto);
-
-                    bllaeb.Incluir(dtoaeb, "");
+                   
                     SalvarIngredientes();
 
                     fichas.IncluiFoto(txtCodigoPrato.Text, foto);
@@ -593,8 +607,7 @@ namespace GerenciadorEstoque.Forms.Fichas
             {
                 try
                 {
-                    bll.Alterar(dto);
-                    bllaeb.Alterar(dtoaeb, "");
+                    bll.Alterar(dto);                    
                     SalvarIngredientes();
 
                     fichas.IncluiFoto(txtCodigoPrato.Text, foto);
@@ -656,6 +669,7 @@ namespace GerenciadorEstoque.Forms.Fichas
             if (foto != "")
             {
                 pbFoto.Load(foto);
+
 
             }
             // If the file name is not an empty string open it for saving.

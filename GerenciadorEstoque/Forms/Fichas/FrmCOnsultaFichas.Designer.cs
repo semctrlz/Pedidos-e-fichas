@@ -48,6 +48,7 @@
             this.txtNome = new System.Windows.Forms.TextBox();
             this.gbFiltros = new System.Windows.Forms.GroupBox();
             this.btPdf = new System.Windows.Forms.Button();
+            this.CbxInativo = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFichas)).BeginInit();
             this.bgDados.SuspendLayout();
             this.gbFiltros.SuspendLayout();
@@ -136,6 +137,7 @@
             this.dgvFichas.Size = new System.Drawing.Size(1036, 656);
             this.dgvFichas.TabIndex = 0;
             this.dgvFichas.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvFichas_CellClick);
+            this.dgvFichas.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.DgvFichas_CellPainting);
             this.dgvFichas.SelectionChanged += new System.EventHandler(this.DgvFichas_SelectionChanged);
             // 
             // bgDados
@@ -203,6 +205,7 @@
             // 
             // gbFiltros
             // 
+            this.gbFiltros.Controls.Add(this.CbxInativo);
             this.gbFiltros.Controls.Add(this.btPdf);
             this.gbFiltros.Controls.Add(this.cbUnidade);
             this.gbFiltros.Controls.Add(this.lbUnidade);
@@ -232,6 +235,17 @@
             this.btPdf.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btPdf.UseVisualStyleBackColor = true;
             this.btPdf.Click += new System.EventHandler(this.BtPdf_Click);
+            // 
+            // CbxInativo
+            // 
+            this.CbxInativo.AutoSize = true;
+            this.CbxInativo.Location = new System.Drawing.Point(326, 36);
+            this.CbxInativo.Name = "CbxInativo";
+            this.CbxInativo.Size = new System.Drawing.Size(174, 17);
+            this.CbxInativo.TabIndex = 14;
+            this.CbxInativo.Text = "Mostrar fichas técnicas inativas";
+            this.CbxInativo.UseVisualStyleBackColor = true;
+            this.CbxInativo.CheckedChanged += new System.EventHandler(this.CbxInativo_CheckedChanged);
             // 
             // FrmConsultaFichas
             // 
@@ -273,5 +287,6 @@
         private System.Windows.Forms.DataGridViewImageColumn dataGridViewImageColumn2;
         private System.Windows.Forms.TextBox txtNome;
         private System.Windows.Forms.GroupBox gbFiltros;
+        private System.Windows.Forms.CheckBox CbxInativo;
     }
 }

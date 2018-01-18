@@ -49,9 +49,9 @@
             this.label8 = new System.Windows.Forms.Label();
             this.txtNomeForn = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.DtpInicio = new System.Windows.Forms.DateTimePicker();
             this.label10 = new System.Windows.Forms.Label();
-            this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
+            this.DtpFim = new System.Windows.Forms.DateTimePicker();
             this.label11 = new System.Windows.Forms.Label();
             this.CbUm = new System.Windows.Forms.ComboBox();
             this.TxtCusto = new System.Windows.Forms.TextBox();
@@ -63,7 +63,7 @@
             this.GbItens = new System.Windows.Forms.GroupBox();
             this.TxtItensAExcluir = new System.Windows.Forms.TextBox();
             this.BtSalvar = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.TxtNumeroCotacao = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.DgvItens)).BeginInit();
             this.GbItens.SuspendLayout();
@@ -245,13 +245,13 @@
             this.label9.TabIndex = 3;
             this.label9.Text = "Nome";
             // 
-            // dateTimePicker1
+            // DtpInicio
             // 
-            this.dateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dateTimePicker1.Location = new System.Drawing.Point(9, 32);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(105, 20);
-            this.dateTimePicker1.TabIndex = 4;
+            this.DtpInicio.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.DtpInicio.Location = new System.Drawing.Point(9, 32);
+            this.DtpInicio.Name = "DtpInicio";
+            this.DtpInicio.Size = new System.Drawing.Size(105, 20);
+            this.DtpInicio.TabIndex = 4;
             // 
             // label10
             // 
@@ -262,13 +262,13 @@
             this.label10.TabIndex = 12;
             this.label10.Text = "Início vigência";
             // 
-            // dateTimePicker2
+            // DtpFim
             // 
-            this.dateTimePicker2.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dateTimePicker2.Location = new System.Drawing.Point(120, 32);
-            this.dateTimePicker2.Name = "dateTimePicker2";
-            this.dateTimePicker2.Size = new System.Drawing.Size(105, 20);
-            this.dateTimePicker2.TabIndex = 5;
+            this.DtpFim.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.DtpFim.Location = new System.Drawing.Point(120, 32);
+            this.DtpFim.Name = "DtpFim";
+            this.DtpFim.Size = new System.Drawing.Size(105, 20);
+            this.DtpFim.TabIndex = 5;
             // 
             // label11
             // 
@@ -364,11 +364,11 @@
             this.GbItens.Controls.Add(this.BtAddItem);
             this.GbItens.Controls.Add(this.CbUm);
             this.GbItens.Controls.Add(this.DgvItens);
-            this.GbItens.Controls.Add(this.dateTimePicker2);
+            this.GbItens.Controls.Add(this.DtpFim);
             this.GbItens.Controls.Add(this.TxtCodItem);
             this.GbItens.Controls.Add(this.label11);
             this.GbItens.Controls.Add(this.TxtNomeItem);
-            this.GbItens.Controls.Add(this.dateTimePicker1);
+            this.GbItens.Controls.Add(this.DtpInicio);
             this.GbItens.Enabled = false;
             this.GbItens.Location = new System.Drawing.Point(12, 104);
             this.GbItens.Name = "GbItens";
@@ -396,13 +396,13 @@
             this.BtSalvar.UseVisualStyleBackColor = true;
             this.BtSalvar.Click += new System.EventHandler(this.BtSalvar_Click);
             // 
-            // textBox1
+            // TxtNumeroCotacao
             // 
-            this.textBox1.Enabled = false;
-            this.textBox1.Location = new System.Drawing.Point(278, 21);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(103, 20);
-            this.textBox1.TabIndex = 23;
+            this.TxtNumeroCotacao.Enabled = false;
+            this.TxtNumeroCotacao.Location = new System.Drawing.Point(278, 21);
+            this.TxtNumeroCotacao.Name = "TxtNumeroCotacao";
+            this.TxtNumeroCotacao.Size = new System.Drawing.Size(103, 20);
+            this.TxtNumeroCotacao.TabIndex = 23;
             // 
             // label5
             // 
@@ -418,7 +418,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(498, 644);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.TxtNumeroCotacao);
             this.Controls.Add(this.GbItens);
             this.Controls.Add(this.CbxTodasUnidades);
             this.Controls.Add(this.DtpData);
@@ -460,9 +460,9 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox txtNomeForn;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.DateTimePicker dateTimePicker1;
+        private System.Windows.Forms.DateTimePicker DtpInicio;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.DateTimePicker dateTimePicker2;
+        private System.Windows.Forms.DateTimePicker DtpFim;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ComboBox CbUm;
         private System.Windows.Forms.TextBox TxtCusto;
@@ -479,7 +479,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Valor;
         private System.Windows.Forms.DataGridViewImageColumn Del;
         private System.Windows.Forms.TextBox TxtItensAExcluir;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox TxtNumeroCotacao;
         private System.Windows.Forms.Label label5;
     }
 }

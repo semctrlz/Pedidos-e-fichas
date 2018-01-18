@@ -1,4 +1,5 @@
-﻿using iTextSharp.text;
+﻿using Ionic.Zip;
+using iTextSharp.text;
 using iTextSharp.text.pdf;
 using System;
 using System.Collections;
@@ -245,6 +246,7 @@ namespace GerenciadorEstoque.Code
 
         public enum StatusPedido { Aberto, Solicitado, Cancelado };
 
+        public enum UniadesMedida {KG, UN, CX, PC, FD, DZ, L};
 
     }
 
@@ -256,8 +258,7 @@ namespace GerenciadorEstoque.Code
             BLLPratos bll = new BLLPratos();
             DataTable ListaInsumos = new DataTable();
             DataTable Item = new DataTable();
-
-
+            
             double CustoTotal = 0;
 
             //Se for Prato
@@ -278,8 +279,14 @@ namespace GerenciadorEstoque.Code
             else
             {
 
-                CustoTotal += UltimaBaixaItem(codigo, unidade);
-
+                if (valorExterno(codigo) > 0)
+                {
+                    CustoTotal += valorExterno(codigo);
+                }
+                else
+                {
+                    CustoTotal += UltimaBaixaItem(codigo, unidade);
+                }
             }
 
             return CustoTotal;
@@ -328,6 +335,12 @@ namespace GerenciadorEstoque.Code
             return CustoTotal;
         }
 
+        double valorExterno(string codigo)
+        {
+            BLLMateriais bll = new BLLMateriais();
+            return bll.ValorExterno(codigo);
+        }
+
         public void ExcluirPrato(string cod)
         {
             // Exclui prato
@@ -340,45 +353,7 @@ namespace GerenciadorEstoque.Code
             {
                 throw new Exception("Erro ao excluir Prato!");
             }
-
-            //Exclui ingredientes referentes ao prato
-            BLLIngredientes blli = new BLLIngredientes();
-            try
-            {
-
-                blli.ExcluirPorPrato(cod);
-            }
-            catch
-            {
-                throw new Exception("Erro ao excluir Ingrediente!");
-            }
-
-            //excluir prato da tabela AEB
-            BLLMateriais bllaeb = new BLLMateriais();
-
-            try
-            {
-                bllaeb.ExcluirPorCodigo(cod);
-            }
-            catch
-            {
-                throw new Exception("Erro ao excluir Aeb!");
-            }
-
-            //excluir custos da tabela custosPratos
-            BLLCustoPrato bllcp = new BLLCustoPrato();
-
-            try
-            {
-                bllcp.ExcluirCustoPratoPorCod(cod);
-            }
-            catch
-            {
-                throw new Exception("Erro ao excluir CustosPratos!");
-            }
-
-            //Exclui imagem referente ao prato (se houver)
-            IncluiFoto(cod, "del");
+            
         }
 
         public void IncluiFoto(String cod, string foto)
@@ -1267,6 +1242,29 @@ namespace GerenciadorEstoque.Code
             return versao;
         }
     }
+
+    public class Zip
+    {
+
+        public void ZippingFile(string origem, string destino, string subpasta)
+        {
+            destino += DateTime.Now.ToString("d-m-yy")+".zip";
+
+            using (ZipFile zip = new ZipFile())
+            {
+                // add this map file into the "images" directory in the zip archive
+                zip.AddFile(origem, subpasta);                
+                zip.Save($"{destino}.zip");
+            }
+        }
+
+        public static void UnzippingFile(string origem, string destino)
+        {
+                        
+        }
+
+    }
+
 
 
 }

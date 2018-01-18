@@ -11,10 +11,10 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>publish\</PublishUrl>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <PublishUrl>ftp://ftp.zware.com.br/public_html/testes/zware/</PublishUrl>
     <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
+    <InstallFrom>Web</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateMode>Foreground</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
@@ -22,9 +22,12 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <UpdateUrl>\\localhost\Update\</UpdateUrl>
+    <InstallUrl>http://zware.com.br/testes/zware/</InstallUrl>
+    <UpdateUrl>http://zware.com.br/testes/zware/</UpdateUrl>
     <MinimumRequiredVersion>0.0.0.1</MinimumRequiredVersion>
-    <ApplicationRevision>14</ApplicationRevision>
+    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
+    <WebPage>publish.htm</WebPage>
+    <ApplicationRevision>31</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -79,6 +82,9 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Ionic.Zip">
+      <HintPath>..\..\..\..\ZWare\CSharp Plugins\DotNetZip\zip-v1.9\Release\Ionic.Zip.dll</HintPath>
+    </Reference>
     <Reference Include="itextsharp">
       <HintPath>..\..\Ferramentas\ITextSharp\itextsharp.dll</HintPath>
     </Reference>
@@ -195,6 +201,12 @@
     <Compile Include="Forms\Ordens\frmCriarCotacoes.Designer.cs">
       <DependentUpon>frmCriarCotacoes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Pedidos\FrmLevantamento.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Pedidos\FrmLevantamento.Designer.cs">
+      <DependentUpon>FrmLevantamento.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Pedidos\FrmPedidos.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -225,6 +237,12 @@
     <Compile Include="Forms\Produtos\FrmAdicionarMovimentos.Designer.cs">
       <DependentUpon>FrmAdicionarMovimentos.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Produtos\FrmCadastraProdutosEmLote.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Produtos\FrmCadastraProdutosEmLote.Designer.cs">
+      <DependentUpon>FrmCadastraProdutosEmLote.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Produtos\frmCadastroProdutos.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -243,11 +261,17 @@
     <Compile Include="Forms\Produtos\FrmConsultaMateriaisEDerivados.Designer.cs">
       <DependentUpon>FrmConsultaMateriaisEDerivados.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Produtos\frmMarcasAprovadas.cs">
+    <Compile Include="Forms\Produtos\FrmEspecializacaoMateriais.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Produtos\frmMarcasAprovadas.Designer.cs">
-      <DependentUpon>frmMarcasAprovadas.cs</DependentUpon>
+    <Compile Include="Forms\Produtos\FrmEspecializacaoMateriais.Designer.cs">
+      <DependentUpon>FrmEspecializacaoMateriais.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Produtos\FrmValorExterno.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Produtos\FrmValorExterno.Designer.cs">
+      <DependentUpon>FrmValorExterno.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Usuarios\frmAlterarSenha.cs">
       <SubType>Form</SubType>
@@ -324,6 +348,9 @@
     <EmbeddedResource Include="Forms\Ordens\frmCriarCotacoes.resx">
       <DependentUpon>frmCriarCotacoes.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Pedidos\FrmLevantamento.resx">
+      <DependentUpon>FrmLevantamento.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Pedidos\FrmPedidos.resx">
       <DependentUpon>FrmPedidos.cs</DependentUpon>
     </EmbeddedResource>
@@ -339,6 +366,9 @@
     <EmbeddedResource Include="Forms\Produtos\FrmAdicionarMovimentos.resx">
       <DependentUpon>FrmAdicionarMovimentos.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Produtos\FrmCadastraProdutosEmLote.resx">
+      <DependentUpon>FrmCadastraProdutosEmLote.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Produtos\frmCadastroProdutos.resx">
       <DependentUpon>frmCadastroProdutos.cs</DependentUpon>
     </EmbeddedResource>
@@ -348,8 +378,11 @@
     <EmbeddedResource Include="Forms\Produtos\FrmConsultaMateriaisEDerivados.resx">
       <DependentUpon>FrmConsultaMateriaisEDerivados.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Produtos\frmMarcasAprovadas.resx">
-      <DependentUpon>frmMarcasAprovadas.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\Produtos\FrmEspecializacaoMateriais.resx">
+      <DependentUpon>FrmEspecializacaoMateriais.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Produtos\FrmValorExterno.resx">
+      <DependentUpon>FrmValorExterno.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Usuarios\frmAlterarSenha.resx">
       <DependentUpon>frmAlterarSenha.cs</DependentUpon>
@@ -372,7 +405,7 @@
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+      <LastGenOutput>Settings1.Designer.cs</LastGenOutput>
     </None>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -412,6 +445,10 @@
   <ItemGroup>
     <Content Include="DaDo.ico" />
     <Content Include="Forms\HTML\mailer.html" />
+    <None Include="Resources\document.png" />
+    <None Include="Resources\defaultImage.jpg" />
+    <None Include="Resources\0.jpg" />
+    <None Include="Resources\default.jpg" />
     <Content Include="VersionInfo.xml" />
     <None Include="Resources\clouddownload2x.png" />
     <None Include="Resources\cloudupload2x.png" />

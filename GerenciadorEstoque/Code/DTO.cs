@@ -95,17 +95,7 @@ namespace GerenciadorEstoque.Code
                     Directory.CreateDirectory(Produtos);
                 }
             }
-            catch { }
-
-            try
-            {
-                if (!Directory.Exists(Icones))
-
-                {
-                    Directory.CreateDirectory(Icones);
-                }
-            }
-            catch { }
+            catch { }            
 
             try
             {
@@ -120,19 +110,19 @@ namespace GerenciadorEstoque.Code
 
         public static string name = System.Environment.MachineName;
 
-        public static string Rede = name == "BINGO" ? "" : @"";
+        public static string Rede = name == "BINGO" ? "" : @"\\DB-WS33\Users\";
 
         public string Pasta
         {
-            get { return Rede + @"GerenciadorEstoque\"; }
+            get { return Rede + @"Public\"; }
         }
 
         public string Updates
         {
-            get { return @"\\DB-WS33\Users\AtualizarSistema\Update\"; }
+            get { return @"http://zware.com.br/testes/zware/"; }
         }
         
-        public string Imagem
+        public string Imagem    
         {
             get { return this.Pasta + @"Imagens\"; }
         }
@@ -149,18 +139,11 @@ namespace GerenciadorEstoque.Code
 
         }
 
-        public string Icones
-        {
-            get { return this.Imagem + @"Icones\"; }
-
-        }
-
         public string FT
         {
             get { return this.Imagem + @"FT\"; }
 
         }
-
     }
 
     public class DTOOutros
@@ -168,6 +151,8 @@ namespace GerenciadorEstoque.Code
 
         public string[] DC()
         {
+
+            //Server = tcp:DB-WS33,49172
             string[] dados = new string[] { Properties.Settings.Default.server, Properties.Settings.Default.Database, Properties.Settings.Default.UserDB, Properties.Settings.Default.senhaDB };
 
             return dados;
@@ -319,6 +304,28 @@ namespace GerenciadorEstoque.Code
 
 
     }
+
+    public class DTOLevantamentos
+    {
+        private int id;
+        private DateTime data;
+
+        //enum entre Aberto, cancelado e concluído
+        private string status;
+
+
+
+        private int idUsuario;
+        private string obs;
+        private int id_unidade;
+
+        public int Id { get => id; set => id = value; }
+        public DateTime Data { get => data; set => data = value; }
+        public string Status { get => status; set => status = value; }
+        public int IdUsuario { get => idUsuario; set => idUsuario = value; }
+        public string Obs { get => obs; set => obs = value; }
+        public int Id_unidade { get => id_unidade; set => id_unidade = value; }
+    }
         
     /// <summary>
     /// Esta tabela será responsável pela matriz de produtos que temos. Ela só será alterada com a clusão de algum item
@@ -354,7 +361,7 @@ namespace GerenciadorEstoque.Code
 
     public class DTOMateriaisDerivados:DTOMateriais
     {
-        private int id_materialDerivado;
+        private int id_materialDerivado;        
         
         public int Id_materialDerivado { get => id_materialDerivado; set => id_materialDerivado = value; }
     }
@@ -475,24 +482,24 @@ namespace GerenciadorEstoque.Code
         public DTOMarcasAprovadas()
         {
             DataAprovacao = DateTime.Now;
+            Ativo = true;
         }
-
-
+        
         private int id_marcas_aprovadas;
-        private int id_material;
+        private string codItemBase;
         private string marca;
         private string aprovadoPor;
         private DateTime dataAprovacao;
-        private bool exibirNoEmail; // Exibe o nome da marca no email de cotação
+        private bool ativo;
         private int id_usuario;
         private string obsAprovacao;
 
         public int Id_marcas_aprovadas { get => id_marcas_aprovadas; set => id_marcas_aprovadas = value; }
-        public int Id_material { get => id_material; set => id_material = value; }
+        public string CodItemBase { get => codItemBase; set => codItemBase = value; }
         public string Marca { get => marca; set => marca = value; }
         public string AprovadoPor { get => aprovadoPor; set => aprovadoPor = value; }
         public DateTime DataAprovacao { get => dataAprovacao; set => dataAprovacao = value; }
-        public bool ExibirNoEmail { get => exibirNoEmail; set => exibirNoEmail = value; }
+        public bool Ativo { get => ativo; set => ativo = value; }
         public int Id_usuario { get => id_usuario; set => id_usuario = value; }
         public string ObsAprovacao { get => obsAprovacao; set => obsAprovacao = value; }
     }
@@ -737,8 +744,11 @@ namespace GerenciadorEstoque.Code
         }
 
         public int PessoasAtendidas { get => pessoasAtendidas; set => pessoasAtendidas = value; }
+        public int Ativo { get => ativo; set => ativo = value; }
 
         private int pessoasAtendidas;
+
+        private int ativo;
 
 
     }
@@ -992,8 +1002,7 @@ namespace GerenciadorEstoque.Code
         public DateTime DataAtualizacao { get => dataAtualizacao; set => dataAtualizacao = value; }
         public string CodigoCigam { get => codigoCigam; set => codigoCigam = value; }
     }
-
-
+    
     #endregion
 
     public class DTOUnidadeMedida
@@ -1014,12 +1023,12 @@ namespace GerenciadorEstoque.Code
 
     public class DTOCotacao :DTOBase
     {
-        private DateTime data_pedido;
-        private DateTime previsao_entrega;
+        private DateTime dataInicioVigencia;
+        private DateTime dataFimVigencia;
         private int idEmpresa;
 
-        public DateTime Data_pedido { get => data_pedido; set => data_pedido = value; }
-        public DateTime Previsao_entrega { get => previsao_entrega; set => previsao_entrega = value; }
+        public DateTime DataInicioVigencia { get => dataInicioVigencia; set => dataInicioVigencia = value; }
+        public DateTime DataFimVigencia { get => dataFimVigencia; set => dataFimVigencia = value; }
         public int IdEmpresa { get => idEmpresa; set => idEmpresa = value; }
     }
 
@@ -1098,6 +1107,7 @@ namespace GerenciadorEstoque.Code
         {
             Obs = "";
             Status = "Aberto";
+            Data_criacao = DateTime.Now;
         }
 
     }

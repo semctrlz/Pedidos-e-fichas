@@ -1,12 +1,7 @@
 ﻿using GerenciadorEstoque.Code;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GerenciadorEstoque.Forms.Empresas
@@ -16,9 +11,10 @@ namespace GerenciadorEstoque.Forms.Empresas
         public DTOMateriais material = new DTOMateriais();        
         int linha = 0;
         bool liberado = false;
-        
-        public FrmConsultaItens()
+        bool somenteE;
+        public FrmConsultaItens(bool somenteItensEstoque = false)
         {
+            somenteE = somenteItensEstoque;
             InitializeComponent();
         }
 
@@ -32,15 +28,25 @@ namespace GerenciadorEstoque.Forms.Empresas
 
         private void CarregaProdutos()
         {
+            DataTable tabela;
+
             BLLMateriais bll = new BLLMateriais();
-            DataTable tabela = bll.Localizar(txtProduto.Text.ToUpper().Trim(), Convert.ToInt32(cbSubgrupo.SelectedValue.ToString()));
-            
+            if (somenteE)
+            {
+                tabela = bll.Localizar(txtProduto.Text.ToUpper().Trim(), Convert.ToInt32(cbSubgrupo.SelectedValue.ToString()), true);
+            }
+            else
+            {
+                tabela = bll.Localizar(txtProduto.Text.ToUpper().Trim(), Convert.ToInt32(cbSubgrupo.SelectedValue.ToString()));
+            }
             DataTable dados = new DataTable();
             
             dgvItens.DataSource = tabela;
 
             FormatarDGV();
         }
+
+        
 
         private void FormatarDGV()
         {
@@ -176,6 +182,15 @@ namespace GerenciadorEstoque.Forms.Empresas
 
             }
         }
-        
+
+        private void DgvItens_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Escape)
+            {
+                e.Handled = true;
+                SelecionaMaterial();
+                this.Close();
+            }
+        }
     }
 }

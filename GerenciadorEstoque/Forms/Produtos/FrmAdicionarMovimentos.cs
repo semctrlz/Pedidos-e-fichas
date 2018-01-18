@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
+using System.Data.SqlClient;
 
 namespace GerenciadorEstoque.Forms.Empresas
 {
@@ -399,6 +400,7 @@ namespace GerenciadorEstoque.Forms.Empresas
 
             DTOCusto dto = new DTOCusto();
             BLLCusto bll = new BLLCusto();
+            BLLMateriais bllM = new BLLMateriais();
 
             int Sucesso = 0;
             //Faz o looping para adicionar os itens da tabela no DB
@@ -446,6 +448,9 @@ namespace GerenciadorEstoque.Forms.Empresas
 
                     if (dto.TipoMovCusto.Substring(0, 1).ToUpper() == "S" && dto.ContaGerencialCusto != "")
                     {
+
+                        bllM.DeletarValorExternoPorCod(dto.CodItemCusto);
+
                         bll.IncluirCusto(dto);
                         PbMovimentos.Value = Convert.ToInt32(((Convert.ToDouble(i + 1) / Convert.ToDouble(totalItens)) * 100));
                         LbMovimento.Text = dto.MovimentoCusto.ToString();
@@ -497,5 +502,6 @@ namespace GerenciadorEstoque.Forms.Empresas
             Ft.AtualizaTodosOsCustos();
             MessageBox.Show("Custos atualizados!", "Aviso");
         }
+
     }
 }

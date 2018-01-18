@@ -1,13 +1,8 @@
 ﻿using GerenciadorEstoque.Code;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GerenciadorEstoque.Forms.Fichas
@@ -29,7 +24,7 @@ namespace GerenciadorEstoque.Forms.Fichas
 
         private void FrmVisualizaFichaTecnica_Load(object sender, EventArgs e)
         {
-            pnImagem.Location = new Point(5, 70);
+            pnImagem.Location = new Point(5, 96);
             pbImagem.Visible = false;
 
             CarregaFicha();
@@ -265,8 +260,15 @@ namespace GerenciadorEstoque.Forms.Fichas
                     lbTotalKg.Text = "0,00";
                 }
 
-                lbcustoPorcao.Text = (TotalFicha / Convert.ToDouble(lbRendimento.Text)).ToString("#,0.00");
-
+                if (Convert.ToDouble(lbRendimento.Text) > 0)
+                {
+                    lbcustoPorcao.Text = (TotalFicha / Convert.ToDouble(lbRendimento.Text)).ToString("#,0.00");
+                }
+                else
+                {
+                    lbcustoPorcao.Text = "0,00";
+                }
+                
                 if (Convert.ToDouble(LbAtendePax.Text) > 0)
                 {
                     LbCustoPax.Text = (TotalFicha / Convert.ToDouble(LbAtendePax.Text)).ToString("#,0.00");

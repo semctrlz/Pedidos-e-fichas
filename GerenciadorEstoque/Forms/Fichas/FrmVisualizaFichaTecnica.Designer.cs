@@ -75,6 +75,7 @@
             this.lbTitulo = new System.Windows.Forms.Label();
             this.pbImagem = new System.Windows.Forms.PictureBox();
             this.pbPrint = new System.Windows.Forms.PictureBox();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.SETORcATsCAT.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.pnImagem.SuspendLayout();
@@ -87,6 +88,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvDados)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbImagem)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbPrint)).BeginInit();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // total
@@ -326,6 +328,7 @@
             // button1
             // 
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Image = global::GerenciadorEstoque.Properties.Resources.x2x;
             this.button1.Location = new System.Drawing.Point(597, 3);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(32, 32);
@@ -358,9 +361,9 @@
             this.pn1.Controls.Add(this.dgvDados);
             this.pn1.Controls.Add(this.SETORcATsCAT);
             this.pn1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pn1.Location = new System.Drawing.Point(0, 70);
+            this.pn1.Location = new System.Drawing.Point(0, 95);
             this.pn1.Name = "pn1";
-            this.pn1.Size = new System.Drawing.Size(644, 676);
+            this.pn1.Size = new System.Drawing.Size(644, 651);
             this.pn1.TabIndex = 6;
             // 
             // panel4
@@ -370,7 +373,7 @@
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Location = new System.Drawing.Point(0, 339);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(644, 337);
+            this.panel4.Size = new System.Drawing.Size(644, 312);
             this.panel4.TabIndex = 5;
             // 
             // panel6
@@ -381,7 +384,7 @@
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel6.Location = new System.Drawing.Point(0, 48);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(644, 289);
+            this.panel6.Size = new System.Drawing.Size(644, 264);
             this.panel6.TabIndex = 5;
             // 
             // lbPreparo
@@ -392,7 +395,7 @@
             this.lbPreparo.Name = "lbPreparo";
             this.lbPreparo.ReadOnly = true;
             this.lbPreparo.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.lbPreparo.Size = new System.Drawing.Size(642, 265);
+            this.lbPreparo.Size = new System.Drawing.Size(642, 240);
             this.lbPreparo.TabIndex = 1;
             // 
             // label2
@@ -631,13 +634,12 @@
             // lbTitulo
             // 
             this.lbTitulo.BackColor = System.Drawing.SystemColors.ActiveBorder;
-            this.lbTitulo.Dock = System.Windows.Forms.DockStyle.Top;
             this.lbTitulo.Font = new System.Drawing.Font("Segoe UI Light", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbTitulo.Location = new System.Drawing.Point(0, 0);
+            this.lbTitulo.Location = new System.Drawing.Point(42, 0);
             this.lbTitulo.Name = "lbTitulo";
-            this.lbTitulo.Size = new System.Drawing.Size(644, 70);
+            this.lbTitulo.Size = new System.Drawing.Size(558, 95);
             this.lbTitulo.TabIndex = 5;
-            this.lbTitulo.Text = "NomeFicha";
+            this.lbTitulo.Text = "COMBINADO SUSHI PUB ROYAL BLACK - 20.01.0021\r\n";
             this.lbTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // pbImagem
@@ -664,6 +666,16 @@
             this.pbPrint.TabStop = false;
             this.pbPrint.Click += new System.EventHandler(this.PbPrint_Click);
             // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.panel1.Controls.Add(this.lbTitulo);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(644, 95);
+            this.panel1.TabIndex = 10;
+            // 
             // FrmVisualizaFichaTecnica
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -673,7 +685,7 @@
             this.Controls.Add(this.pnImagem);
             this.Controls.Add(this.pbPrint);
             this.Controls.Add(this.pn1);
-            this.Controls.Add(this.lbTitulo);
+            this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -695,6 +707,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvDados)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbImagem)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbPrint)).EndInit();
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -744,5 +757,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label LbAtendePax;
+        private System.Windows.Forms.Panel panel1;
     }
 }

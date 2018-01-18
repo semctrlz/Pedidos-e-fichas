@@ -60,6 +60,7 @@
             this.dgvItens.TabIndex = 0;
             this.dgvItens.TabStop = false;
             this.dgvItens.SelectionChanged += new System.EventHandler(this.DgvItens_SelectionChanged);
+            this.dgvItens.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DgvItens_KeyDown);
             // 
             // pnDados
             // 
@@ -132,7 +133,7 @@
             this.panel1.Size = new System.Drawing.Size(781, 646);
             this.panel1.TabIndex = 2;
             // 
-            // frmConsultaItem
+            // FrmConsultaItens
             // 
             this.AcceptButton = this.btEsc;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -142,7 +143,7 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.pnDados);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "frmConsultaItem";
+            this.Name = "FrmConsultaItens";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Consulta Item";
             this.Load += new System.EventHandler(this.FrmConsultaItem_Load);

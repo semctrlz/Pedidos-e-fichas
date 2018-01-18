@@ -253,5 +253,41 @@ namespace GerenciadorEstoque.Properties {
                 return ((string)(this["UserDB"]));
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int ItensLoteCbCodigoCigam {
+            get {
+                return ((int)(this["ItensLoteCbCodigoCigam"]));
+            }
+            set {
+                this["ItensLoteCbCodigoCigam"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int itensLoteCbNome {
+            get {
+                return ((int)(this["itensLoteCbNome"]));
+            }
+            set {
+                this["itensLoteCbNome"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int itensLoteCbUm {
+            get {
+                return ((int)(this["itensCbUm"]));
+            }
+            set {
+                this["itensCbUm"] = value;
+            }
+        }
     }
 }

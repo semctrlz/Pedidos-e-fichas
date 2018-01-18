@@ -23,11 +23,8 @@ namespace GerenciadorEstoque.Forms
 
         private void Main_Load(object sender, EventArgs e)
         {
-            
-
-
             ChecaUsuario();
-            VerificaXMV();
+            VerificaXMV();            
         }
 
         private bool TestaConexao()
@@ -204,9 +201,7 @@ namespace GerenciadorEstoque.Forms
 
         private void AprovarMarcasToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Empresas.frmMarcasAprovadas frm = new Empresas.frmMarcasAprovadas(usuarioLogado);
-            frm.ShowDialog();
-            frm.Dispose();
+            
         }
 
         private void CadastrarProdutosToolStripMenuItem_Click(object sender, EventArgs e)
@@ -372,6 +367,50 @@ namespace GerenciadorEstoque.Forms
             Pedidos.FrmPedido f = new Pedidos.FrmPedido(usuarioLogado);
             f.ShowDialog();
             f.Dispose();
+        }
+
+        private void CadastrarEmLoteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Produtos.FrmCadastraProdutosEmLote f = new Produtos.FrmCadastraProdutosEmLote(usuarioLogado);
+            f.ShowDialog();
+            f.Dispose();
+            
+        }
+
+        private void organizarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Pedidos.OrganizacaoPlanilhaPedidos f = new Pedidos.OrganizacaoPlanilhaPedidos(usuarioLogado);
+            f.ShowDialog();
+            f.Dispose();
+        }
+
+        private void cadastrarValorExternoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Produtos.FrmValorExterno f = new Produtos.FrmValorExterno(usuarioLogado);
+            f.ShowDialog();
+            f.Dispose();
+        }
+
+        private void EspecializaçãoDeProdutosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Produtos.FrmEspecializacaoMateriais f = new Produtos.FrmEspecializacaoMateriais(usuarioLogado);
+            f.ShowDialog();
+            f.Dispose();
+        }
+
+        private void criarLevantamentoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BLLPermissoes bllperm = new BLLPermissoes();
+            if (bllperm.PermissaoPorLocal(Diversos.LocaisPermissoes.Pedidos, usuarioLogado) >= 3)
+            {
+                Pedidos.FrmLevantamento frm = new Pedidos.FrmLevantamento(usuarioLogado);
+                frm.ShowDialog();
+                frm.Dispose();
+            }
+            else
+            {
+                MessageBox.Show("Você não tem permissão para realizar levantamentos.\nPor favor, contate o administrador do sistema.!", "Aviso");
+            }
         }
     }
 }

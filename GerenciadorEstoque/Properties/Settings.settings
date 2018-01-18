@@ -62,5 +62,11 @@
     <Setting Name="UserDB" Type="System.String" Scope="Application">
       <Value Profile="(Default)">sa</Value>
     </Setting>
+    <Setting Name="ItensLoteCbCodigoCigam" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="itensCbNome" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
