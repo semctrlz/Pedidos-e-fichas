@@ -116,6 +116,13 @@ namespace GerenciadorEstoque.Code
             return DALobj.ListarProdutos(valor);
         }
 
+        public DataTable ListarProdutos()
+        {
+            DALMateriais DALobj = new DALMateriais(conexao);
+            return DALobj.ListarProdutos();
+        }
+
+
         public DataTable Localizar(string valor, int id)
         {
             DALMateriais DALobj = new DALMateriais(conexao);
@@ -234,6 +241,19 @@ namespace GerenciadorEstoque.Code
             DALMateriaisDerivados DALobj = new DALMateriaisDerivados(conexao);
             return DALobj.ExisteNome(nome);
         }
+
+        public int QuantMateriaisDerivados(string nome)
+        {
+            DALMateriaisDerivados DALobj = new DALMateriaisDerivados(conexao);
+            return DALobj.QuantMateriaisDerivados(nome);
+        }
+
+        public int IdMaterialDerivado(string nome)
+        {
+            DALMateriaisDerivados DALobj = new DALMateriaisDerivados(conexao);
+            return DALobj.IdMaterialDerivado(nome);
+        }
+
     }
 
     public class BLLUSuarios
@@ -1762,6 +1782,46 @@ namespace GerenciadorEstoque.Code
             DALobj.Excluir(id);
 
         }
+
+    }
+
+    public class BLLItensLevantamentos
+    {
+        private DALConexao conexao;
+
+        public BLLItensLevantamentos()
+        {
+            DALConexao cx = new DALConexao(DALDadosConexao.StringDaConexao);
+
+            this.conexao = cx;
+        }
+
+        public void Incluir(DTOItensLevantamento modelo)
+        {            
+            DALItensLevantamento DALobj = new DALItensLevantamento(conexao);
+            DALobj.Incluir(modelo);
+        }
+
+        public void Alterar(DTOItensLevantamento modelo)
+        {
+            DALItensLevantamento DALobj = new DALItensLevantamento(conexao);
+            DALobj.Alterar(modelo);
+        }
+
+        public void Excluir(int id)
+        {
+            DALItensLevantamento DALobj = new DALItensLevantamento(conexao);
+            DALobj.Excluir(id);
+
+        }
+
+        public DataTable Listar(int idLevantamento)
+        {
+            DALItensLevantamento DALobj = new DALItensLevantamento(conexao);
+            return DALobj.Listar(idLevantamento);
+            
+        }
+
 
     }
 

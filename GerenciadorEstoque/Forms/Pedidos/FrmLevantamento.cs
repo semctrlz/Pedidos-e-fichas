@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static GerenciadorEstoque.Code.Diversos;
 
 namespace GerenciadorEstoque.Forms.Pedidos
 {
@@ -17,7 +18,7 @@ namespace GerenciadorEstoque.Forms.Pedidos
         bool liberado = false;
         DTOUsuarios usuarioLogado;
         int unidade;
-        StatusJanela Status;
+        StatusJanela Status;        
 
         public enum StatusJanela {inicial, criacao };
 
@@ -29,12 +30,12 @@ namespace GerenciadorEstoque.Forms.Pedidos
 
         private void FrmLevantamento_Load(object sender, EventArgs e)
         {
+            CbUm.DataSource = Enum.GetValues(typeof(UniadesMedida));
+
             Status = StatusJanela.inicial;
             CarregaPagina();
             TxtObs.Focus();
-
             
-
             PnItensDerivadosV(false);
 
             liberado = true;
@@ -44,17 +45,89 @@ namespace GerenciadorEstoque.Forms.Pedidos
         {
             CarregaUnidades();
 
-            //AtualizaBotoes();
+            AtualizaBotoes();
         }
 
-        private void AtualizaLv()
+        private void AtualizaLv(string cod)
         {
             LvMatDer.Items.Clear();
-            
-            
-            LvMatDer.Items.Add("Teste 01");
-            LvMatDer.Items.Add("Teste 02");
-            LvMatDer.Items.Add("Teste 03");
+
+            BLLMateriaisDerivados bll = new BLLMateriaisDerivados();
+
+
+            if (bll.QuantMateriaisDerivados(cod) == 1)
+            {
+                DataTable lista = bll.Listar(cod);
+
+            }
+            else if (bll.QuantMateriaisDerivados(cod) > 1)
+            {
+                DataTable lista = bll.Listar(cod);                
+
+                for (int i =0; i<lista.Rows.Count; i++)
+                {
+                    LvMatDer.Items.Add(lista.Rows[i][2].ToString());
+                }
+
+                PnItensDerivadosV(true);
+            }
+            else
+            {
+
+            }
+        }
+
+        private void AdicionarRegistro(string codItem, int idDerivados, string um, double quant)
+        {
+            BLLItensLevantamentos bll = new BLLItensLevantamentos();
+            DTOItensLevantamento dto = new DTOItensLevantamento
+            {
+                IdLevantamento = Convert.ToInt32(TxtNumeroLevantamento.Text),
+                CodItem = codItem,
+                IdDerivados = idDerivados,
+                Um = um,
+                Quant = quant
+            };
+
+            bll.Incluir(dto);
+
+            txtCodItem.Clear();
+            txtNomeItem.Clear();
+            CbUm.Text = "KG";
+            txtQuant.Clear();
+            txtCodItem.Focus();
+
+            CarregarDgv();
+        }
+
+        private void CarregarDgv()
+        {
+            //Carrega todos os materiais derivados do codigo que está na variavel 'codigoAtual'
+
+            DgvItens.Rows.Clear();
+
+            BLLItensLevantamentos bll = new BLLItensLevantamentos();
+            DataTable materiais = bll.Listar(Convert.ToInt32(TxtNumeroLevantamento.Text));
+
+            if (materiais.Rows.Count > 0)
+            {
+                string idMaterialDerivado, nomeItem, um;
+                double quant;
+
+                for (int i = 0; i < materiais.Rows.Count; i++)
+                {
+                    idMaterialDerivado = materiais.Rows[i][0].ToString();
+                    nomeItem = materiais.Rows[i][1].ToString();
+                    um = materiais.Rows[i][2].ToString();
+                    quant = Convert.ToDouble(materiais.Rows[i][3].ToString());
+
+                    String[] V = new string[] { idMaterialDerivado, nomeItem, um, quant.ToString("#.0,00") };
+                    DgvItens.Rows.Add(V);
+
+                }
+
+            }
+
         }
 
         private void PnItensDerivadosV(bool visivel)
@@ -82,7 +155,7 @@ namespace GerenciadorEstoque.Forms.Pedidos
             }
             else
             {
-                GbItens.Enabled = false;
+                GbItens.Enabled = true;
             }
 
 
@@ -133,7 +206,7 @@ namespace GerenciadorEstoque.Forms.Pedidos
                         txtNomeItem.Text = dto.Descricao.ToString();                        
                         CbUm.Text = dto.Um.ToString();
                         txtQuant.Enabled = true;
-                        BtAddItem.Enabled = true;
+                        BtAddItem.Enabled = true;                        
 
                         txtQuant.Focus();
                     }
@@ -165,12 +238,53 @@ namespace GerenciadorEstoque.Forms.Pedidos
 
             bll.Incluir(dto);
             TxtNumeroLevantamento.Text = dto.Id.ToString("000000");
-            
 
+            Status = StatusJanela.criacao;
 
             AtualizaBotoes();
 
             txtCodItem.Focus();
+        }
+
+        private void BtAddItem_Click(object sender, EventArgs e)
+        {
+            //faz verificações
+
+            AtualizaLv(txtCodItem.Text);
+        }
+
+        private void BtnOk_Click(object sender, EventArgs e)
+        {
+
+            if (LvMatDer.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Selecione uma derivação do material.");
+            }
+            else {
+
+                int intselectedindex = LvMatDer.SelectedIndices[0];
+
+                string nome = LvMatDer.Items[intselectedindex].Text;
+
+                BLLMateriaisDerivados bll = new BLLMateriaisDerivados();
+
+                int idDer = bll.IdMaterialDerivado(nome);
+                AdicionarRegistro(txtCodItem.Text, idDer, CbUm.Text, Convert.ToDouble(txtQuant.Text));
+                PnItensDerivadosV(false);
+
+
+            }
+
+        }
+
+        private void DgvItens_SelectionChanged(object sender, EventArgs e)
+        {
+            DgvItens.ClearSelection();
+        }
+
+        private void BtBuscar_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

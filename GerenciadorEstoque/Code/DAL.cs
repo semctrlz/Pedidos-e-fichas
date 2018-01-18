@@ -67,8 +67,7 @@ namespace GerenciadorEstoque.Code
             SqlCommand cmd = new SqlCommand()
             {
                 Connection = conexao.ObjetoConexao,
-                CommandText = "insert into materiais (codigocigam, subgrupo_id_subgrupo, descricao, um, fc, conversaoPeso) " +
-                              "values (@codigo, @subgrupo, @nome, @um, @fc, @conversao); select @@IDENTITY;"
+                CommandText = "EXECUTE InserirMaterial @codigo, @nome, @um, @subgrupo, @fc, @conversao;"
             };
 
             string codigo;
@@ -374,6 +373,16 @@ $"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigo
 
         }
 
+        public DataTable ListarProdutos()
+        {
+            DataTable tabela = new DataTable();
+            SqlDataAdapter da = new SqlDataAdapter(@"select id_material, codigocigam, descricao, um from materiais where codigocigam like '01.%';", conexao.StringConexao);
+            da.Fill(tabela);
+            return tabela;
+
+        }
+
+
         public string NomePeloCodigo(String codigo)
         {
             DTOMateriais modelo = new DTOMateriais();
@@ -580,6 +589,55 @@ $"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigo
             return result;
         }
 
+        public int QuantMateriaisDerivados(string codigo)
+        {
+
+            DTOUsuarios modelo = new DTOUsuarios();
+            SqlCommand cmd = new SqlCommand()
+            {
+                Connection = conexao.ObjetoConexao,
+                CommandText = $"select count(id_materialDerivado) as quant from materiaisDerivados where codMaterialBase = '{codigo}';"
+            };
+
+            conexao.Conectar();
+            int retorno = 0;            
+            SqlDataReader registro = cmd.ExecuteReader();
+            if (registro.HasRows)
+            {
+                registro.Read();
+                retorno = Convert.ToInt32(registro["quant"]);               
+            }
+
+            conexao.Desconectar();
+
+            return retorno;
+
+        }
+
+        public int IdMaterialDerivado(string nome)
+        {
+
+            DTOUsuarios modelo = new DTOUsuarios();
+            SqlCommand cmd = new SqlCommand()
+            {
+                Connection = conexao.ObjetoConexao,
+                CommandText = $"select id_materialDerivado from materiaisDerivados where descricao = '{nome}';"
+            };
+
+            conexao.Conectar();
+            int retorno = 0;
+            SqlDataReader registro = cmd.ExecuteReader();
+            if (registro.HasRows)
+            {
+                registro.Read();
+                retorno = Convert.ToInt32(registro["id_materialDerivado"]);
+            }
+
+            conexao.Desconectar();
+
+            return retorno;
+
+        }      
 
 
     }
@@ -3983,6 +4041,82 @@ $"where descricao like '%{valor}%' group by m.id_material, m.descricao, m.codigo
 
         }
                 
+    }
+
+    public class DALItensLevantamento
+    {
+        //Instancia o objeto conexão
+        private DALConexao conexao;
+
+        //Conecta
+        public DALItensLevantamento(DALConexao cx)
+        {
+            this.conexao = cx;
+        }
+
+        public void Incluir(DTOItensLevantamento modelo)
+        {
+            SqlCommand cmd = new SqlCommand()
+            {
+                Connection = conexao.ObjetoConexao,
+                CommandText = "EXECUTE CriaItemLevantamento @IdLevantamento, @IdDerivados, @CodItem, @Um, @Quant;"
+            };
+
+            cmd.Parameters.AddWithValue("@IdLevantamento", modelo.IdLevantamento);
+            cmd.Parameters.AddWithValue("@IdDerivados", modelo.IdDerivados);
+            cmd.Parameters.AddWithValue("@CodItem", modelo.CodItem);
+            cmd.Parameters.AddWithValue("@Um", modelo.Um);
+            cmd.Parameters.AddWithValue("@Quant", modelo.Quant);
+            
+
+            conexao.Conectar();
+            modelo.Id = Convert.ToInt32(cmd.ExecuteScalar());
+            conexao.Desconectar();
+        }
+
+        public void Alterar(DTOItensLevantamento modelo)
+        {
+            SqlCommand cmd = new SqlCommand()
+            {
+                Connection = conexao.ObjetoConexao,
+                CommandText = "EXECUTE AlterarItemLevantamento @Id, @IdLevantamento, @IdDerivados, @CodItem, @Um, @Quant;"
+            };
+
+            cmd.Parameters.AddWithValue("@Id", modelo.Id);
+            cmd.Parameters.AddWithValue("@IdLevantamento", modelo.IdLevantamento);
+            cmd.Parameters.AddWithValue("@IdDerivados", modelo.IdDerivados);
+            cmd.Parameters.AddWithValue("@CodItem", modelo.CodItem);
+            cmd.Parameters.AddWithValue("@Um", modelo.Um);
+            cmd.Parameters.AddWithValue("@Quant", modelo.Quant);
+
+            conexao.Conectar();
+            cmd.ExecuteNonQuery();
+            conexao.Desconectar();
+
+        }
+
+        public void Excluir(int id)
+        {
+            SqlCommand cmd = new SqlCommand()
+            {
+                Connection = conexao.ObjetoConexao,
+                CommandText = $"delete from itensLevantamento where id = {id};"
+            };
+
+            conexao.Conectar();
+            cmd.ExecuteNonQuery();
+            conexao.Desconectar();
+
+        }
+
+        public DataTable Listar(int idLevantamento)
+        {
+            DataTable tabela = new DataTable();
+            SqlDataAdapter da = new SqlDataAdapter($"select l.id, m.descricao, l.um, l.quant from itensLevantamento l inner join materiaisDerivados m on l.idDerivados = m.id_materialDerivado  where idLevantamento = {idLevantamento};", conexao.StringConexao);
+            da.Fill(tabela);
+            return tabela;
+        }
+        
     }
 
 }

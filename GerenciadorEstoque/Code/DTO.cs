@@ -326,6 +326,29 @@ namespace GerenciadorEstoque.Code
         public string Obs { get => obs; set => obs = value; }
         public int Id_unidade { get => id_unidade; set => id_unidade = value; }
     }
+
+    public class DTOItensLevantamento
+    {
+        private int id;
+        private int idLevantamento;
+        private int idDerivados;
+        private string codItem;
+        private string um;
+        private double quant;
+
+        public int Id { get => id; set => id = value; }
+        public int IdLevantamento { get => idLevantamento; set => idLevantamento = value; }
+        public int IdDerivados { get => idDerivados; set => idDerivados = value; }
+        public string CodItem { get => codItem; set => codItem = value; }
+        public string Um { get => um; set => um = value; }
+        public double Quant { get => quant; set => quant = value; }
+
+        public DTOItensLevantamento()
+        {
+            IdDerivados = 0;
+        }
+
+    }
         
     /// <summary>
     /// Esta tabela será responsável pela matriz de produtos que temos. Ela só será alterada com a clusão de algum item
